@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>독립운동-근대학교온톨로지</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; }
+  #project-header { padding: 10px 16px; border-bottom: 1px solid #ddd; }
+  #network { width: 100%; height: calc(100vh - 60px); border: none; }
+  #layout-controls { position: fixed; bottom: 16px; right: 16px; z-index: 10; }
+  #layout-controls button {
+    margin-left: 6px; padding: 6px 12px; border: 1px solid #999; background: #fff;
+    border-radius: 4px; cursor: pointer; font-size: 13px;
+  }
+  #layout-controls button.active { background: #333; color: #fff; }
+</style>
+</head>
+<body>
+<div id="project-header"><h1>독립운동-근대학교온톨로지</h1></div>
+<div id="network"></div>
+<div id="layout-controls">
+  <button id="btn-normal" class="active" onclick="setLayout('normal')">Normal</button>
+  <button id="btn-horizontal" onclick="setLayout('horizontal')">Horizontal</button>
+  <button id="btn-vertical" onclick="setLayout('vertical')">Vertical</button>
+</div>
+
+<script type="text/javascript">
+  var nodesData = [{"id": "정주", "label": "정주", "color": "gray", "shape": "circle", "title": "정주"}, {"id": "평양", "label": "평양", "color": "gray", "shape": "circle", "title": "평양"}, {"id": "서울", "label": "서울", "color": "gray", "shape": "circle", "title": "서울"}, {"id": "서간도", "label": "서간도", "color": "gray", "shape": "circle", "title": "서간도"}, {"id": "상해", "label": "상해", "color": "gray", "shape": "circle", "title": "상해"}, {"id": "신민회", "label": "신민회", "color": "green", "shape": "box", "title": "신민회"}, {"id": "대한독립군", "label": "대한독립군", "color": "green", "shape": "box", "title": "대한독립군"}, {"id": "북로군정서", "label": "북로군정서", "color": "green", "shape": "box", "title": "북로군정서"}, {"id": "조선물산장려회", "label": "조선물산장려회", "color": "green", "shape": "box", "title": "조선물산장려회"}, {"id": "신간회", "label": "신간회", "color": "green", "shape": "box", "title": "신간회"}, {"id": "천도교", "label": "천도교", "color": "green", "shape": "box", "title": "천도교"}, {"id": "오산학교", "label": "오산학교", "color": "navy", "shape": "square", "title": "오산학교"}, {"id": "대성학교", "label": "대성학교", "color": "navy", "shape": "square", "title": "대성학교"}, {"id": "숭실학교", "label": "숭실학교", "color": "navy", "shape": "square", "title": "숭실학교"}, {"id": "보성학교", "label": "보성학교", "color": "navy", "shape": "square", "title": "보성학교"}, {"id": "신흥무관학교", "label": "신흥무관학교", "color": "navy", "shape": "square", "title": "신흥무관학교"}, {"id": "삼일운동", "label": "삼일운동", "color": "orange", "shape": "star", "title": "삼일운동"}, {"id": "물산장려운동", "label": "물산장려운동", "color": "orange", "shape": "star", "title": "물산장려운동"}, {"id": "안악사건", "label": "안악사건", "color": "orange", "shape": "star", "title": "안악사건"}, {"id": "백오인사건", "label": "백오인사건", "color": "orange", "shape": "star", "title": "백오인사건"}, {"id": "봉오동전투", "label": "봉오동전투", "color": "orange", "shape": "star", "title": "봉오동전투"}, {"id": "청산리전투", "label": "청산리전투", "color": "orange", "shape": "star", "title": "청산리전투"}, {"id": "이승훈", "label": "이승훈", "color": "blue", "shape": "dot", "title": "이승훈"}, {"id": "안창호", "label": "안창호", "color": "blue", "shape": "dot", "title": "안창호"}, {"id": "조만식", "label": "조만식", "color": "blue", "shape": "dot", "title": "조만식"}, {"id": "양기탁", "label": "양기탁", "color": "blue", "shape": "dot", "title": "양기탁"}, {"id": "안명근", "label": "안명근", "color": "blue", "shape": "dot", "title": "안명근"}, {"id": "홍범도", "label": "홍범도", "color": "blue", "shape": "dot", "title": "홍범도"}, {"id": "최광옥", "label": "최광옥", "color": "blue", "shape": "dot", "title": "최광옥"}, {"id": "차이석", "label": "차이석", "color": "blue", "shape": "dot", "title": "차이석"}, {"id": "이종호", "label": "이종호", "color": "blue", "shape": "dot", "title": "이종호"}, {"id": "손병희", "label": "손병희", "color": "blue", "shape": "dot", "title": "손병희"}, {"id": "이회영", "label": "이회영", "color": "blue", "shape": "dot", "title": "이회영"}, {"id": "이시영", "label": "이시영", "color": "blue", "shape": "dot", "title": "이시영"}, {"id": "이동녕", "label": "이동녕", "color": "blue", "shape": "dot", "title": "이동녕"}, {"id": "이상룡", "label": "이상룡", "color": "blue", "shape": "dot", "title": "이상룡"}, {"id": "지청천", "label": "지청천", "color": "blue", "shape": "dot", "title": "지청천"}, {"id": "이종일", "label": "이종일", "color": "blue", "shape": "dot", "title": "이종일"}, {"id": "한용운", "label": "한용운", "color": "blue", "shape": "dot", "title": "한용운"}, {"id": "오세창", "label": "오세창", "color": "blue", "shape": "dot", "title": "오세창"}, {"id": "김좌진", "label": "김좌진", "color": "blue", "shape": "dot", "title": "김좌진"}, {"id": "서일", "label": "서일", "color": "blue", "shape": "dot", "title": "서일"}, {"id": "이범석", "label": "이범석", "color": "blue", "shape": "dot", "title": "이범석"}, {"id": "이승만", "label": "이승만", "color": "blue", "shape": "dot", "title": "이승만"}, {"id": "이동휘", "label": "이동휘", "color": "blue", "shape": "dot", "title": "이동휘"}, {"id": "최린", "label": "최린", "color": "red", "shape": "triangle", "title": "최린"}, {"id": "정춘수", "label": "정춘수", "color": "red", "shape": "triangle", "title": "정춘수"}, {"id": "박희도", "label": "박희도", "color": "red", "shape": "triangle", "title": "박희도"}, {"id": "유영모", "label": "유영모", "color": "blue", "shape": "dot", "title": "유영모"}, {"id": "배위량", "label": "배위량", "color": "blue", "shape": "dot", "title": "배위량"}, {"id": "이용익", "label": "이용익", "color": "blue", "shape": "dot", "title": "이용익"}, {"id": "함석헌", "label": "함석헌", "color": "blue", "shape": "dot", "title": "함석헌"}, {"id": "대한민국임시정부", "label": "대한민국임시정부", "color": "green", "shape": "box", "title": "대한민국임시정부"}];
+  var edgesData = [{"from": "이승훈", "to": "오산학교", "arrows": "to", "label": "foundedSchool", "title": "설립"}, {"from": "안창호", "to": "대성학교", "arrows": "to", "label": "foundedSchool", "title": "설립"}, {"from": "배위량", "to": "숭실학교", "arrows": "to", "label": "foundedSchool", "title": "설립"}, {"from": "이용익", "to": "보성학교", "arrows": "to", "label": "foundedSchool", "title": "설립"}, {"from": "이회영", "to": "신흥무관학교", "arrows": "to", "label": "foundedSchool", "title": "설립"}, {"from": "이시영", "to": "신흥무관학교", "arrows": "to", "label": "foundedSchool", "title": "설립"}, {"from": "이동녕", "to": "신흥무관학교", "arrows": "to", "label": "foundedSchool", "title": "설립"}, {"from": "이상룡", "to": "신흥무관학교", "arrows": "to", "label": "foundedSchool", "title": "설립"}, {"from": "이승훈", "to": "오산학교", "arrows": "to", "label": "taughtAt", "title": "재직"}, {"from": "조만식", "to": "오산학교", "arrows": "to", "label": "taughtAt", "title": "재직"}, {"from": "유영모", "to": "오산학교", "arrows": "to", "label": "taughtAt", "title": "재직"}, {"from": "지청천", "to": "신흥무관학교", "arrows": "to", "label": "taughtAt", "title": "재직"}, {"from": "이범석", "to": "신흥무관학교", "arrows": "to", "label": "taughtAt", "title": "재직"}, {"from": "함석헌", "to": "오산학교", "arrows": "to", "label": "graduatedFrom", "title": "졸업"}, {"from": "최광옥", "to": "숭실학교", "arrows": "to", "label": "graduatedFrom", "title": "졸업"}, {"from": "차이석", "to": "숭실학교", "arrows": "to", "label": "graduatedFrom", "title": "졸업"}, {"from": "박희도", "to": "숭실학교", "arrows": "to", "label": "graduatedFrom", "title": "졸업"}, {"from": "이종호", "to": "보성학교", "arrows": "to", "label": "administeredSchool", "title": "경영"}, {"from": "이종일", "to": "보성학교", "arrows": "to", "label": "administeredSchool", "title": "경영"}, {"from": "이승훈", "to": "신민회", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "안창호", "to": "신민회", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "양기탁", "to": "신민회", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "최광옥", "to": "신민회", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "이종호", "to": "신민회", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "이회영", "to": "신민회", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "이시영", "to": "신민회", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "김좌진", "to": "신민회", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "손병희", "to": "천도교", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "오세창", "to": "천도교", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "최린", "to": "천도교", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "이범석", "to": "북로군정서", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "이승만", "to": "대한민국임시정부", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "이동휘", "to": "대한민국임시정부", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "이시영", "to": "대한민국임시정부", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "이동녕", "to": "대한민국임시정부", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "안창호", "to": "대한민국임시정부", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "차이석", "to": "대한민국임시정부", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "조만식", "to": "신간회", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "박희도", "to": "신간회", "arrows": "to", "label": "memberOf", "title": "소속"}, {"from": "홍범도", "to": "대한독립군", "arrows": "to", "label": "foundedOrg", "title": "창설"}, {"from": "김좌진", "to": "북로군정서", "arrows": "to", "label": "foundedOrg", "title": "창설"}, {"from": "서일", "to": "북로군정서", "arrows": "to", "label": "foundedOrg", "title": "창설"}, {"from": "조만식", "to": "조선물산장려회", "arrows": "to", "label": "foundedOrg", "title": "창설"}, {"from": "이승훈", "to": "삼일운동", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "손병희", "to": "삼일운동", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "이종일", "to": "삼일운동", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "한용운", "to": "삼일운동", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "오세창", "to": "삼일운동", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "조만식", "to": "삼일운동", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "최린", "to": "삼일운동", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "정춘수", "to": "삼일운동", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "박희도", "to": "삼일운동", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "이승훈", "to": "백오인사건", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "안명근", "to": "안악사건", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "홍범도", "to": "봉오동전투", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "김좌진", "to": "청산리전투", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "이범석", "to": "청산리전투", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "홍범도", "to": "청산리전투", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "조만식", "to": "물산장려운동", "arrows": "to", "label": "participatedIn", "title": "참여"}, {"from": "함석헌", "to": "유영모", "arrows": "to", "label": "mentoredBy", "title": "사사"}, {"from": "이승훈", "to": "안창호", "arrows": "to", "label": "influencedBy", "title": "영향받음"}, {"from": "이상룡", "to": "양기탁", "arrows": "to", "label": "influencedBy", "title": "영향받음"}, {"from": "오산학교", "to": "신민회", "arrows": "to", "label": "establishedByOrg", "title": "설립근거"}, {"from": "대성학교", "to": "신민회", "arrows": "to", "label": "establishedByOrg", "title": "설립근거"}, {"from": "신흥무관학교", "to": "신민회", "arrows": "to", "label": "establishedByOrg", "title": "설립근거"}, {"from": "오산학교", "to": "대성학교", "arrows": "to", "label": "modeledAfter", "title": "모델"}, {"from": "보성학교", "to": "천도교", "arrows": "to", "label": "acquiredBy", "title": "인수됨"}, {"from": "신민회", "to": "평양", "arrows": "to", "label": "locatedIn", "title": "위치"}, {"from": "대성학교", "to": "평양", "arrows": "to", "label": "locatedIn", "title": "위치"}, {"from": "숭실학교", "to": "평양", "arrows": "to", "label": "locatedIn", "title": "위치"}, {"from": "조선물산장려회", "to": "평양", "arrows": "to", "label": "locatedIn", "title": "위치"}, {"from": "오산학교", "to": "정주", "arrows": "to", "label": "locatedIn", "title": "위치"}, {"from": "보성학교", "to": "서울", "arrows": "to", "label": "locatedIn", "title": "위치"}, {"from": "신흥무관학교", "to": "서간도", "arrows": "to", "label": "locatedIn", "title": "위치"}, {"from": "대한민국임시정부", "to": "상해", "arrows": "to", "label": "locatedIn", "title": "위치"}, {"from": "안악사건", "to": "백오인사건", "arrows": "to", "color": "#e67e22", "width": 4, "label": "ledTo", "title": "확대이어짐"}, {"from": "봉오동전투", "to": "청산리전투", "arrows": "to", "color": "#e67e22", "width": 4, "label": "ledTo", "title": "확대이어짐"}, {"from": "삼일운동", "to": "보성학교", "arrows": "to", "label": "printedAt", "title": "인쇄"}];
+
+  var nodes = new vis.DataSet(nodesData);
+  var edges = new vis.DataSet(edgesData);
+
+  var container = document.getElementById('network');
+  var data = { nodes: nodes, edges: edges };
+
+  var baseOptions = {
+    nodes: {
+      font: { size: 14 },
+      borderWidth: 1
+    },
+    edges: {
+      font: { size: 11, align: 'middle' },
+      smooth: { type: 'dynamic' }
+    },
+    physics: {
+      stabilization: true,
+      barnesHut: { gravitationalConstant: -6000, springLength: 140 }
+    },
+    interaction: { hover: true, tooltipDelay: 120 },
+    layout: { improvedLayout: true }
+  };
+
+  var layoutOptions = {
+    normal: { layout: { hierarchical: false }, physics: { enabled: true } },
+    horizontal: {
+      layout: { hierarchical: { enabled: true, direction: 'LR', sortMethod: 'directed' } },
+      physics: { enabled: false }
+    },
+    vertical: {
+      layout: { hierarchical: { enabled: true, direction: 'UD', sortMethod: 'directed' } },
+      physics: { enabled: false }
+    }
+  };
+
+  var network = new vis.Network(container, data, baseOptions);
+
+  function setLayout(kind) {
+    network.setOptions(layoutOptions[kind]);
+    ['normal', 'horizontal', 'vertical'].forEach(function (k) {
+      document.getElementById('btn-' + k).classList.toggle('active', k === kind);
+    });
+  }
+
+  // 하이퍼링크: 노드 클릭 시 지정된 URL로 이동
+  network.on('click', function (params) {
+    if (params.nodes.length === 1) {
+      var node = nodes.get(params.nodes[0]);
+      if (node && node._url) {
+        window.open(node._url, '_blank');
+      }
+    }
+  });
+</script>
+</body>
+</html>

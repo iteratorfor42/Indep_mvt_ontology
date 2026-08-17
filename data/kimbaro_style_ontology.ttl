@@ -1,0 +1,133 @@
+@prefix : <http://example.org/independence-school-v2#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/independence-school-v2> rdf:type owl:Ontology ;
+    rdfs:label "독립운동-근대학교 온톨로지 v2 (김바로/김현 방식 - 사건 중심 설계)"@ko ;
+    rdfs:comment "AKS 인문정보학 방법론(김현 교수 정립, 김바로 교수 계승)을 따름: 원문에서 시간/장소/관직 등 요소를 추출하고, '사건'을 독립된 노드로 승격해 그 사건이 여러 속성을 갖도록 설계. v1(이항관계 중심)과 대비됨."@ko .
+
+
+### ============================
+### 1. 핵심 클래스 - Event를 1급 시민으로 승격
+### ============================
+
+:Entity rdf:type owl:Class ; rdfs:comment "인물, 단체, 학교, 장소 등 모든 개체의 상위 클래스."@ko .
+:Person rdf:type owl:Class ; rdfs:subClassOf :Entity .
+:Organization rdf:type owl:Class ; rdfs:subClassOf :Entity .
+:School rdf:type owl:Class ; rdfs:subClassOf :Organization .
+:Place rdf:type owl:Class ; rdfs:subClassOf :Entity .
+
+:Event rdf:type owl:Class ;
+    rdfs:comment "슬라이드의 '임명' 사례처럼, 시간·장소·자격 등 여러 속성을 한 데 묶는 단위. 인물이나 학교와 동급의 1급 노드."@ko .
+
+:AppointmentEvent rdf:type owl:Class ; rdfs:subClassOf :Event ;
+    rdfs:comment "예시 슬라이드의 '임명' 사건과 동일한 패턴. 예: 이순신의 전라좌수사 임명."@ko .
+
+:FoundingEvent rdf:type owl:Class ; rdfs:subClassOf :Event ;
+    rdfs:comment "설립 행위 자체를 노드로. 시간/장소/공동설립자를 속성으로 가짐."@ko .
+
+:RoleEvent rdf:type owl:Class ; rdfs:subClassOf :Event ;
+    rdfs:comment "인물이 특정 기간 동안 특정 지위/역할을 가졌음을 나타내는 사건. 최린처럼 시간에 따라 지위가 바뀌는 인물을 표현하기 위한 핵심 장치."@ko .
+
+:HistoricalIncident rdf:type owl:Class ; rdfs:subClassOf :Event .
+
+
+### ============================
+### 2. 속성 - 사건에 붙는 것들 (슬라이드의 ~시간/~장소/~관직 패턴)
+### ============================
+
+:eventAgent rdf:type owl:ObjectProperty ; rdfs:domain :Event ; rdfs:range :Entity ;
+    rdfs:comment "사건의 주체. 슬라이드의 '객체=이순신'에 해당." .
+:eventTarget rdf:type owl:ObjectProperty ; rdfs:domain :Event ; rdfs:range :Entity ;
+    rdfs:comment "사건의 대상(피설립 학교, 소속 단체 등)." .
+:eventTime rdf:type owl:DatatypeProperty ; rdfs:domain :Event ; rdfs:range xsd:string ;
+    rdfs:comment "슬라이드의 '~시간'." .
+:eventPlace rdf:type owl:ObjectProperty ; rdfs:domain :Event ; rdfs:range :Place ;
+    rdfs:comment "슬라이드의 '~장소'." .
+:eventCapacity rdf:type owl:DatatypeProperty ; rdfs:domain :Event ; rdfs:range xsd:string ;
+    rdfs:comment "슬라이드의 '~관직'에 해당. 사건 당시의 직함/자격." .
+:sourceText rdf:type owl:DatatypeProperty ; rdfs:domain :Event ; rdfs:range xsd:string ;
+    rdfs:comment "이 사건 정보의 원문 근거. 슬라이드 방식의 핵심 - 원문을 남겨 검증 가능하게 함." .
+:roleType rdf:type owl:DatatypeProperty ; rdfs:domain :RoleEvent ; rdfs:range xsd:string .
+:roleFrom rdf:type owl:DatatypeProperty ; rdfs:domain :RoleEvent ; rdfs:range xsd:gYear .
+:roleTo rdf:type owl:DatatypeProperty ; rdfs:domain :RoleEvent ; rdfs:range xsd:gYear .
+:hasRole rdf:type owl:ObjectProperty ; rdfs:domain :Person ; rdfs:range :RoleEvent .
+
+
+### ============================
+### 3. 예시 1 - 슬라이드와 동일한 패턴 재현 (이순신)
+### ============================
+
+:이순신 rdf:type :Person ; rdfs:label "이순신"@ko .
+:전라좌도 rdf:type :Place .
+
+:이순신_전라좌수사임명 rdf:type :AppointmentEvent ;
+    :eventAgent :이순신 ;
+    :eventPlace :전라좌도 ;
+    :eventCapacity "수군절도사"@ko ;
+    :eventTime "1591"^^xsd:gYear ;
+    :sourceText "이순신은 1591년 전라좌도 수군절도사에 임명되었다"@ko ;
+    rdfs:comment "슬라이드 예시를 그대로 온톨로지로 재현: <인물 임명시간=1591년 임명장소=전라좌도 임명관직=수군절도사>이순신</인물>과 동일한 정보를 사건 노드로 표현."@ko .
+
+
+### ============================
+### 4. 예시 2 - 설립 사건 (기존 이항관계 대비)
+### ============================
+
+:이승훈 rdf:type :Person .
+:오산학교 rdf:type :School .
+:정주 rdf:type :Place .
+
+:오산학교_설립사건 rdf:type :FoundingEvent ;
+    :eventAgent :이승훈 ;
+    :eventTarget :오산학교 ;
+    :eventPlace :정주 ;
+    :eventTime "1907"^^xsd:gYear ;
+    :sourceText "1907년 이승훈이 신민회 노선에 따라 평안북도 정주에 오산학교를 설립"@ko ;
+    rdfs:comment "v1에서는 :이승훈 :foundedSchool :오산학교 로 단순 표현. v2에서는 '설립'이라는 사건을 노드화해 시간·장소·근거원문을 함께 묶음. 훗날 공동설립자가 추가로 발견되면 eventAgent를 추가하기만 하면 됨 - 이항관계였다면 새 트리플을 따로 만들어야 하는 것과 대조적." .
+
+
+### ============================
+### 5. 예시 3 - 시간에 따른 지위 변화 (최린) - 핵심 해결 사례
+### ============================
+
+:최린 rdf:type :Person .
+:천도교 rdf:type :Organization .
+:매일신보 rdf:type :Organization .
+
+:최린_독립운동가역할 rdf:type :RoleEvent ;
+    :eventAgent :최린 ;
+    :roleType "독립선언서 초안 작성 및 민족대표 33인"@ko ;
+    :roleFrom "1919"^^xsd:gYear ;
+    :roleTo "1934"^^xsd:gYear ;
+    :eventTarget :천도교 ;
+    :sourceText "최린은 천도교 측 인사로 3.1운동 독립선언서 초안을 작성, 민족대표 33인으로 참여"@ko .
+
+:최린_친일협력역할 rdf:type :RoleEvent ;
+    :eventAgent :최린 ;
+    :roleType "매일신보 사장, 중추원 참의, 임전보국단장"@ko ;
+    :roleFrom "1934"^^xsd:gYear ;
+    :eventTarget :매일신보 ;
+    :sourceText "1934년 중추원 참의, 1937년 매일신보 사장, 1939년 임전보국단장을 지내며 친일 행적"@ko ;
+    rdfs:comment "v1에서는 :최린 rdf:type :IndependenceActivist, :ColonialCollaborator 로 두 클래스에 동시 소속 - 시간 정보가 없어 '언제부터 언제까지 무엇이었는지'를 알 수 없었음. v2에서는 두 개의 RoleEvent로 분리해 시기별 지위가 명확히 구분됨. 이게 바로 최린 문제의 실질적 해법."@ko .
+
+
+### ============================
+### 6. 예시 4 - 사건의 인과 연쇄도 사건-사건 관계로 (안악사건→105인사건)
+### ============================
+
+:안악사건 rdf:type :HistoricalIncident ;
+    :eventAgent :안명근 ;
+    :eventTime "1910"^^xsd:gYear ;
+    :sourceText "안명근이 서간도 무관학교 설립자금을 모집하다 황해도 신천에서 체포"@ko .
+
+:백오인사건 rdf:type :HistoricalIncident ;
+    :eventTime "1911"^^xsd:gYear ;
+    :sourceText "일제가 안악사건을 확대·조작하여 신민회 인사 105인을 기소"@ko .
+
+:안명근 rdf:type :Person .
+
+:leadsTo rdf:type owl:ObjectProperty ; rdfs:domain :Event ; rdfs:range :Event .
+:안악사건 :leadsTo :백오인사건 .

@@ -1,0 +1,164 @@
+#Project
+h1 독립운동-근대학교온톨로지
+
+#Class
+School navy square
+Organization green box
+Event orange star
+Place gray circle
+Person blue dot
+ColonialCollaborator red triangle
+
+#Relation
+acquiredBy 인수됨 arrow 1
+administeredSchool 경영 arrow 1
+establishedByOrg 설립근거 arrow 1
+foundedOrg 창설 arrow 1
+foundedSchool 설립 arrow 1
+graduatedFrom 졸업 arrow 1
+influencedBy 영향받음 arrow 1
+ledTo 확대이어짐 sequence 1
+locatedIn 위치 arrow 1
+memberOf 소속 arrow 1
+mentoredBy 사사 arrow 1
+modeledAfter 모델 arrow 1
+participatedIn 참여 arrow 1
+printedAt 인쇄 arrow 1
+taughtAt 재직 arrow 1
+
+#Nodes
+정주 Place 정주
+평양 Place 평양
+서울 Place 서울
+서간도 Place 서간도
+상해 Place 상해
+신민회 Organization 신민회
+대한독립군 Organization 대한독립군
+북로군정서 Organization 북로군정서
+조선물산장려회 Organization 조선물산장려회
+신간회 Organization 신간회
+천도교 Organization 천도교
+오산학교 School 오산학교
+대성학교 School 대성학교
+숭실학교 School 숭실학교
+보성학교 School 보성학교
+신흥무관학교 School 신흥무관학교
+삼일운동 Event 삼일운동
+물산장려운동 Event 물산장려운동
+안악사건 Event 안악사건
+백오인사건 Event 백오인사건
+봉오동전투 Event 봉오동전투
+청산리전투 Event 청산리전투
+이승훈 Person 이승훈
+안창호 Person 안창호
+조만식 Person 조만식
+양기탁 Person 양기탁
+안명근 Person 안명근
+홍범도 Person 홍범도
+최광옥 Person 최광옥
+차이석 Person 차이석
+이종호 Person 이종호
+손병희 Person 손병희
+이회영 Person 이회영
+이시영 Person 이시영
+이동녕 Person 이동녕
+이상룡 Person 이상룡
+지청천 Person 지청천
+이종일 Person 이종일
+한용운 Person 한용운
+오세창 Person 오세창
+김좌진 Person 김좌진
+서일 Person 서일
+이범석 Person 이범석
+이승만 Person 이승만
+이동휘 Person 이동휘
+최린 ColonialCollaborator 최린
+정춘수 ColonialCollaborator 정춘수
+박희도 ColonialCollaborator 박희도
+유영모 Person 유영모
+배위량 Person 배위량
+이용익 Person 이용익
+함석헌 Person 함석헌
+대한민국임시정부 Organization 대한민국임시정부
+
+#Links
+이승훈 오산학교 foundedSchool
+안창호 대성학교 foundedSchool
+배위량 숭실학교 foundedSchool
+이용익 보성학교 foundedSchool
+이회영 신흥무관학교 foundedSchool
+이시영 신흥무관학교 foundedSchool
+이동녕 신흥무관학교 foundedSchool
+이상룡 신흥무관학교 foundedSchool
+이승훈 오산학교 taughtAt
+조만식 오산학교 taughtAt
+유영모 오산학교 taughtAt
+지청천 신흥무관학교 taughtAt
+이범석 신흥무관학교 taughtAt
+함석헌 오산학교 graduatedFrom
+최광옥 숭실학교 graduatedFrom
+차이석 숭실학교 graduatedFrom
+박희도 숭실학교 graduatedFrom
+이종호 보성학교 administeredSchool
+이종일 보성학교 administeredSchool
+이승훈 신민회 memberOf
+안창호 신민회 memberOf
+양기탁 신민회 memberOf
+최광옥 신민회 memberOf
+이종호 신민회 memberOf
+이회영 신민회 memberOf
+이시영 신민회 memberOf
+김좌진 신민회 memberOf
+손병희 천도교 memberOf
+오세창 천도교 memberOf
+최린 천도교 memberOf
+이범석 북로군정서 memberOf
+이승만 대한민국임시정부 memberOf
+이동휘 대한민국임시정부 memberOf
+이시영 대한민국임시정부 memberOf
+이동녕 대한민국임시정부 memberOf
+안창호 대한민국임시정부 memberOf
+차이석 대한민국임시정부 memberOf
+조만식 신간회 memberOf
+박희도 신간회 memberOf
+홍범도 대한독립군 foundedOrg
+김좌진 북로군정서 foundedOrg
+서일 북로군정서 foundedOrg
+조만식 조선물산장려회 foundedOrg
+이승훈 삼일운동 participatedIn
+손병희 삼일운동 participatedIn
+이종일 삼일운동 participatedIn
+한용운 삼일운동 participatedIn
+오세창 삼일운동 participatedIn
+조만식 삼일운동 participatedIn
+최린 삼일운동 participatedIn
+정춘수 삼일운동 participatedIn
+박희도 삼일운동 participatedIn
+이승훈 백오인사건 participatedIn
+안명근 안악사건 participatedIn
+홍범도 봉오동전투 participatedIn
+김좌진 청산리전투 participatedIn
+이범석 청산리전투 participatedIn
+홍범도 청산리전투 participatedIn
+조만식 물산장려운동 participatedIn
+함석헌 유영모 mentoredBy
+이승훈 안창호 influencedBy
+이상룡 양기탁 influencedBy
+오산학교 신민회 establishedByOrg
+대성학교 신민회 establishedByOrg
+신흥무관학교 신민회 establishedByOrg
+오산학교 대성학교 modeledAfter
+보성학교 천도교 acquiredBy
+신민회 평양 locatedIn
+대성학교 평양 locatedIn
+숭실학교 평양 locatedIn
+조선물산장려회 평양 locatedIn
+오산학교 정주 locatedIn
+보성학교 서울 locatedIn
+신흥무관학교 서간도 locatedIn
+대한민국임시정부 상해 locatedIn
+안악사건 백오인사건 ledTo
+봉오동전투 청산리전투 ledTo
+삼일운동 보성학교 printedAt
+
+#End

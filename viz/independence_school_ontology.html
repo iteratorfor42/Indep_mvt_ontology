@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>일제강점기 독립운동-근대학교 온톨로지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  :root {
+    --paper: #F3EDE0;
+    --paper-2: #EAE2D0;
+    --ink: #2B2620;
+    --ink-soft: #5A5348;
+    --hairline: #C9BFA8;
+    --red: #A8342A;
+    --school: #2C3E66;
+    --org: #7A6A35;
+    --event: #3D6B5C;
+    --place: #8B857A;
+    --collab: #8C2F26;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  header {
+    padding: 28px 32px 18px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 700;
+    font-size: 26px;
+    margin: 0 0 6px;
+    letter-spacing: -0.3px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .stamp {
+    display: inline-block;
+    border: 1.5px solid var(--red);
+    color: var(--red);
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 2px 8px;
+    margin-right: 8px;
+    letter-spacing: 1px;
+    transform: rotate(-2deg);
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 0;
+  }
+  #graph-wrap {
+    position: relative;
+    border-right: 1px solid var(--hairline);
+  }
+  #graph { display: block; width: 100%; }
+  .controls {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: calc(100% - 28px);
+  }
+  .filter-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 5px 10px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    color: var(--ink-soft);
+    cursor: pointer;
+    border-radius: 3px;
+    user-select: none;
+  }
+  .filter-btn.active { color: #fff; border-color: transparent; }
+  .filter-btn[data-type="School"].active { background: var(--school); }
+  .filter-btn[data-type="Organization"].active { background: var(--org); }
+  .filter-btn[data-type="Event"].active { background: var(--event); }
+  .filter-btn[data-type="Person"].active { background: var(--red); }
+  .filter-btn[data-type="Place"].active { background: var(--place); }
+  #search {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 6px 10px;
+    border: 1px solid var(--hairline);
+    background: #fff;
+    color: var(--ink);
+    width: 160px;
+    border-radius: 3px;
+  }
+  #search::placeholder { color: #A39B8B; }
+  .node circle { cursor: pointer; stroke-width: 1px; }
+  .node text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 11px;
+    fill: var(--ink);
+    pointer-events: none;
+  }
+  .node.dim { opacity: 0.12; }
+  .link { stroke: #B8AD93; stroke-width: 1px; opacity: 0.55; }
+  .link.dim { opacity: 0.05; }
+  .link-label {
+    font-size: 9px;
+    fill: var(--ink-soft);
+    pointer-events: none;
+  }
+  #panel {
+    padding: 20px 18px;
+    overflow-y: auto;
+    max-height: calc(100vh - 90px);
+  }
+  #panel h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 17px;
+    margin: 0 0 4px;
+  }
+  #panel .type-tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  #panel .desc {
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    border-top: 1px dashed var(--hairline);
+    padding-top: 10px;
+    margin-top: 8px;
+  }
+  #panel .rel-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 16px 0 6px;
+    color: var(--red);
+  }
+  #panel .rel-item {
+    font-size: 12px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--paper-2);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  #panel .rel-item:hover { color: var(--red); }
+  #panel .rel-verb { color: #A39B8B; font-size: 10px; white-space: nowrap; }
+  #panel .empty {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.8;
+  }
+  .legend-key {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+  }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  #legend { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--hairline); }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    #panel { max-height: 300px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div><span class="stamp">FACT-CHECKED</span></div>
+  <h1>일제강점기 독립운동 &amp; 근대학교 온톨로지</h1>
+  <div class="subtitle">노드를 드래그·클릭해 탐색하세요. 상단 버튼으로 유형 필터, 우측 상단 검색창으로 이름 검색이 가능합니다.<br>출처: 우리역사넷 · 한국민족문화대백과사전 · 위키백과 (교차 확인)</div>
+</header>
+
+<div class="layout">
+  <div id="graph-wrap">
+    <div class="controls" id="filters"></div>
+    <input id="search" type="text" placeholder="이름 검색...">
+    <svg id="graph"></svg>
+  </div>
+  <div id="panel">
+    <div class="empty">노드를 클릭하면 상세 정보와 연결 관계가 여기에 표시됩니다.</div>
+    <div id="legend">
+      <div class="legend-key"><span class="legend-dot" style="background:#2C3E66"></span>학교</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#7A6A35"></span>단체</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#3D6B5C"></span>사건</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#A8342A"></span>인물</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#8B857A"></span>장소</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#8C2F26;border:2px solid #fff;box-shadow:0 0 0 1px #8C2F26"></span>인물 (이후 친일 전향)</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const nodesData = [
+  {id:"오산학교", type:"School", desc:"1907년 이승훈이 평안북도 정주에 설립. 신민회 결의에 따른 설립."},
+  {id:"대성학교", type:"School", desc:"안창호가 평양에 설립. 오산학교가 이를 모델로 삼음."},
+  {id:"숭실학교", type:"School", desc:"1897년 평양, 미국 북장로교 선교사 배위량 설립. 105인사건·3.1운동의 중심지."},
+  {id:"보성학교", type:"School", desc:"1905년 서울, 이용익 설립. 부속 인쇄소 보성사에서 3.1운동 독립선언서 인쇄. 현 고려대 전신."},
+  {id:"신흥무관학교", type:"School", desc:"1911년 서간도, 신민회 결의로 이회영 등이 설립한 군사학교. 계몽운동과 무장투쟁을 잇는 다리."},
+  {id:"신민회", type:"Organization", desc:"1907년 조직된 비밀결사. 애국계몽운동 및 국외 무관학교 설립을 주도."},
+  {id:"대한독립군", type:"Organization", desc:"1919년 홍범도가 창설. 신민회 계열과는 별개인 만주 무장투쟁 계열."},
+  {id:"천도교", type:"Organization", desc:"보성학교를 인수한 종교단체. 3.1운동 민족대표 다수 배출."},
+  {id:"북로군정서", type:"Organization", desc:"1919년 서일·김좌진 등이 조직. 청산리전투의 주역."},
+  {id:"대한민국임시정부", type:"Organization", desc:"1919년 4월 상해 수립. 여러 계열의 인물이 다시 결집하는 지점."},
+  {id:"조선물산장려회", type:"Organization", desc:"1920년 조만식 등이 평양에서 창립. 국내 실력양성운동 계열."},
+  {id:"신간회", type:"Organization", desc:"1927년 결성. 민족주의·사회주의 협동전선."},
+  {id:"삼일운동", type:"Event", desc:"1919년 3월 1일 전민족적 독립운동."},
+  {id:"안악사건", type:"Event", desc:"1910년 안명근이 무관학교 자금 모집 중 체포된 사건. 105인사건으로 확대됨."},
+  {id:"백오인사건", type:"Event", desc:"1911년, 신민회를 뿌리 뽑기 위해 일제가 안악사건을 조작·확대한 사건."},
+  {id:"봉오동전투", type:"Event", desc:"1920년 홍범도의 대한독립군이 일본군을 대파."},
+  {id:"청산리전투", type:"Event", desc:"1920년 김좌진의 북로군정서와 홍범도의 대한독립군 연합 승리."},
+  {id:"물산장려운동", type:"Event", desc:"1920년 평양에서 시작된 국산품 애용 운동."},
+  {id:"정주", type:"Place", desc:"평안북도. 오산학교 소재지."},
+  {id:"평양", type:"Place", desc:"대성학교·숭실학교·신민회 소재지."},
+  {id:"서울", type:"Place", desc:"보성학교 소재지 (당시 한성)."},
+  {id:"서간도", type:"Place", desc:"신흥무관학교 소재지."},
+  {id:"상해", type:"Place", desc:"대한민국임시정부 수립지."},
+  {id:"이승훈", type:"Person", desc:"1864~1930. 오산학교 설립자, 신민회 회원, 105인사건 연루, 3.1운동 민족대표 33인."},
+  {id:"안창호", type:"Person", desc:"대성학교 설립자, 신민회 주도, 임시정부 참여."},
+  {id:"조만식", type:"Person", desc:"오산학교 교장 역임. 3.1운동 가담 후 옥고. 조선물산장려회·신간회 주도, 국내에 남은 계열."},
+  {id:"유영모", type:"Person", desc:"오산학교 교장 역임. 함석헌을 가르침."},
+  {id:"함석헌", type:"Person", desc:"오산학교 졸업, 유영모에게 사사."},
+  {id:"양기탁", type:"Person", desc:"신민회 회원."},
+  {id:"안명근", type:"Person", desc:"안중근의 사촌동생. 안악사건의 주역."},
+  {id:"홍범도", type:"Person", desc:"1868~1943. 대한독립군 창설, 봉오동·청산리전투 참전."},
+  {id:"배위량", type:"Person", desc:"미국 북장로교 선교사. 숭실학교 설립자 (W.M.Baird)."},
+  {id:"최광옥", type:"Person", desc:"숭실학교 1회 졸업생이자 신민회 평안남도 조직 지도자 - 학교와 단체를 잇는 인물."},
+  {id:"차이석", type:"Person", desc:"숭실학교 1회 졸업생. 대한민국 임시정부 요인."},
+  {id:"이용익", type:"Person", desc:"보성학교 설립자. 1907년 사망."},
+  {id:"이종호", type:"Person", desc:"이용익의 손자. 보성학교 경영, 신민회 가담, 안중근 의거 배후 인물로 지목되어 망명."},
+  {id:"손병희", type:"Person", desc:"천도교 지도자. 민족대표 33인 핵심. 보성학교 인수 주도."},
+  {id:"이회영", type:"Person", desc:"신민회 발족·헤이그특사 파견 주도. 신흥무관학교 설립을 이끔."},
+  {id:"이시영", type:"Person", desc:"신흥무관학교 설립 참여. 이후 임시정부 참여, 초대 부통령."},
+  {id:"이동녕", type:"Person", desc:"신흥무관학교 설립 참여. 임시정부 국무총리·대통령직무대리 역임."},
+  {id:"이상룡", type:"Person", desc:"안동 유림 출신. 신흥무관학교 설립 참여."},
+  {id:"지청천", type:"Person", desc:"일본육사 출신 장교였다가 망명, 신흥무관학교 교관 합류. 이후 광복군 총사령관."},
+  {id:"이종일", type:"Person", desc:"보성사 사장. 독립선언서 2만1천매 인쇄."},
+  {id:"한용운", type:"Person", desc:"민족대표 33인, 불교계 대표. 시인."},
+  {id:"오세창", type:"Person", desc:"민족대표 33인, 천도교 대표."},
+  {id:"김좌진", type:"Person", desc:"1889~1930. 신민회 등 계몽운동 활동 이력 후 북로군정서 이끌고 청산리대첩 지휘."},
+  {id:"서일", type:"Person", desc:"북로군정서 조직 주도."},
+  {id:"이범석", type:"Person", desc:"신흥무관학교 교관 합류 후 북로군정서 연성대장으로 청산리전투 참전."},
+  {id:"이승만", type:"Person", desc:"임시정부 초대 대통령."},
+  {id:"이동휘", type:"Person", desc:"임시정부 국무총리."},
+  {id:"최린", type:"Person", collab:true, desc:"천도교, 독립선언서 초안 작성. 이후 변절해 1934년 중추원 참의, 1937년 매일신보 사장 등 역임."},
+  {id:"정춘수", type:"Person", collab:true, desc:"감리회 목사, 원산 만세운동 지도. 1934년 전향, 이후 신사참배·창씨개명 독려."},
+  {id:"박희도", type:"Person", collab:true, desc:"숭실중학교 졸업. 3.1운동 옥고, 신간회 활동 이후 전향해 친일반민족행위자로 규정."}
+];
+
+const linksData = [
+  ["이승훈","오산학교","설립"],["이승훈","오산학교","재직"],["이승훈","신민회","소속"],
+  ["이승훈","삼일운동","참여"],["이승훈","백오인사건","참여"],["이승훈","안창호","영향받음"],
+  ["안창호","대성학교","설립"],["안창호","신민회","소속"],["안창호","대한민국임시정부","소속"],
+  ["조만식","오산학교","재직"],["조만식","삼일운동","참여"],["조만식","조선물산장려회","설립"],
+  ["조만식","물산장려운동","참여"],["조만식","신간회","소속"],
+  ["유영모","오산학교","재직"],["함석헌","오산학교","졸업"],["함석헌","유영모","사사"],
+  ["양기탁","신민회","소속"],["안명근","안악사건","참여"],["안악사건","백오인사건","확대"],
+  ["홍범도","대한독립군","창설"],["홍범도","봉오동전투","참여"],["홍범도","청산리전투","참여"],
+  ["봉오동전투","청산리전투","이어짐"],
+  ["배위량","숭실학교","설립"],["최광옥","숭실학교","졸업"],["최광옥","신민회","소속"],
+  ["차이석","숭실학교","졸업"],["차이석","대한민국임시정부","소속"],
+  ["이용익","보성학교","설립"],["이종호","보성학교","경영"],["이종호","신민회","소속"],
+  ["보성학교","천도교","인수됨"],["손병희","천도교","소속"],["손병희","삼일운동","참여"],
+  ["오산학교","대성학교","모델"],["오산학교","신민회","설립근거"],["대성학교","신민회","설립근거"],
+  ["신흥무관학교","신민회","설립근거"],["신흥무관학교","서간도","위치"],
+  ["이회영","신흥무관학교","설립"],["이회영","신민회","소속"],
+  ["이시영","신흥무관학교","설립"],["이시영","신민회","소속"],["이시영","대한민국임시정부","소속"],
+  ["이동녕","신흥무관학교","설립"],["이동녕","대한민국임시정부","소속"],
+  ["이상룡","신흥무관학교","설립"],["이상룡","양기탁","영향받음"],
+  ["지청천","신흥무관학교","재직"],
+  ["이종일","보성학교","경영"],["이종일","삼일운동","참여"],["삼일운동","보성학교","인쇄"],
+  ["한용운","삼일운동","참여"],["오세창","천도교","소속"],["오세창","삼일운동","참여"],
+  ["김좌진","신민회","소속"],["김좌진","북로군정서","창설"],["김좌진","청산리전투","참여"],
+  ["서일","북로군정서","창설"],
+  ["이범석","신흥무관학교","재직"],["이범석","북로군정서","소속"],["이범석","청산리전투","참여"],
+  ["이승만","대한민국임시정부","소속"],["이동휘","대한민국임시정부","소속"],
+  ["최린","천도교","소속"],["최린","삼일운동","참여"],
+  ["정춘수","삼일운동","참여"],
+  ["박희도","숭실학교","졸업"],["박희도","삼일운동","참여"],["박희도","신간회","소속"],
+  ["오산학교","정주","위치"],["대성학교","평양","위치"],["숭실학교","평양","위치"],
+  ["보성학교","서울","위치"],["신민회","평양","위치"],["조선물산장려회","평양","위치"],
+  ["대한민국임시정부","상해","위치"]
+];
+
+const colorMap = { School:"#2C3E66", Organization:"#7A6A35", Event:"#3D6B5C", Place:"#8B857A", Person:"#A8342A" };
+function nodeColor(d){ return d.collab ? "#8C2F26" : colorMap[d.type]; }
+function nodeRadius(d){ return d.type==="Person" ? 8 : (d.type==="Place" ? 5 : 10); }
+
+const wrap = document.getElementById('graph-wrap');
+let W = wrap.clientWidth, H = window.innerHeight - 92;
+const svg = d3.select("#graph").attr("width", W).attr("height", H);
+const g = svg.append("g");
+
+svg.call(d3.zoom().scaleExtent([0.3,3]).on("zoom", (ev) => g.attr("transform", ev.transform)));
+
+const nodeById = new Map(nodesData.map(d => [d.id, d]));
+const links = linksData.map(([s,t,l]) => ({source:s, target:t, label:l}));
+
+const sim = d3.forceSimulation(nodesData)
+  .force("link", d3.forceLink(links).id(d => d.id).distance(75).strength(0.5))
+  .force("charge", d3.forceManyBody().strength(-190))
+  .force("center", d3.forceCenter(W/2, H/2))
+  .force("collide", d3.forceCollide().radius(28));
+
+const link = g.append("g").selectAll("line").data(links).join("line").attr("class","link");
+
+const node = g.append("g").selectAll("g").data(nodesData).join("g")
+  .attr("class","node")
+  .call(d3.drag()
+    .on("start", (ev,d)=>{ if(!ev.active) sim.alphaTarget(0.25).restart(); d.fx=d.x; d.fy=d.y; })
+    .on("drag", (ev,d)=>{ d.fx=ev.x; d.fy=ev.y; })
+    .on("end", (ev,d)=>{ if(!ev.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }));
+
+node.append("circle")
+  .attr("r", nodeRadius)
+  .attr("fill", nodeColor)
+  .attr("stroke", d => d.collab ? "#fff" : "none")
+  .attr("stroke-width", d => d.collab ? 2 : 0);
+
+node.append("text")
+  .text(d => d.id)
+  .attr("x", d => nodeRadius(d) + 4)
+  .attr("y", 4);
+
+node.on("click", (ev,d) => showPanel(d));
+
+sim.on("tick", () => {
+  link.attr("x1", d=>d.source.x).attr("y1", d=>d.source.y)
+      .attr("x2", d=>d.target.x).attr("y2", d=>d.target.y);
+  node.attr("transform", d => `translate(${d.x},${d.y})`);
+});
+
+const typeLabels = {School:"학교", Organization:"단체", Event:"사건", Person:"인물", Place:"장소"};
+const filterState = new Set(Object.keys(typeLabels));
+const filterBar = document.getElementById('filters');
+Object.entries(typeLabels).forEach(([type,label]) => {
+  const btn = document.createElement('div');
+  btn.className = 'filter-btn active';
+  btn.dataset.type = type;
+  btn.textContent = label;
+  btn.onclick = () => {
+    if (filterState.has(type)) { filterState.delete(type); btn.classList.remove('active'); }
+    else { filterState.add(type); btn.classList.add('active'); }
+    applyFilter();
+  };
+  filterBar.appendChild(btn);
+});
+
+function applyFilter(query) {
+  const q = (query||"").trim();
+  node.classed("dim", d => !filterState.has(d.type) || (q && !d.id.includes(q)));
+  link.classed("dim", l => {
+    const s = nodeById.get(l.source.id||l.source), t = nodeById.get(l.target.id||l.target);
+    const okType = filterState.has(s.type) && filterState.has(t.type);
+    const okQuery = !q || s.id.includes(q) || t.id.includes(q);
+    return !(okType && okQuery);
+  });
+}
+
+document.getElementById('search').addEventListener('input', (e) => applyFilter(e.target.value));
+
+function showPanel(d) {
+  const panel = document.getElementById('panel');
+  const related = links.filter(l => (l.source.id||l.source)===d.id || (l.target.id||l.target)===d.id)
+    .map(l => {
+      const sId = l.source.id||l.source, tId = l.target.id||l.target;
+      const other = sId===d.id ? tId : sId;
+      const dir = sId===d.id ? "→" : "←";
+      return {other, label:l.label, dir};
+    });
+  panel.innerHTML = `
+    <h2>${d.id}</h2>
+    <span class="type-tag" style="background:${nodeColor(d)}">${typeLabels[d.type]}${d.collab?' · 친일 전향':''}</span>
+    <div class="desc">${d.desc}</div>
+    <div class="rel-title">연결 관계 (${related.length})</div>
+    ${related.map(r => `<div class="rel-item" data-id="${r.other}"><span>${r.dir} ${r.other}</span><span class="rel-verb">${r.label}</span></div>`).join('')}
+    <div id="legend">
+      <div class="legend-key"><span class="legend-dot" style="background:#2C3E66"></span>학교</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#7A6A35"></span>단체</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#3D6B5C"></span>사건</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#A8342A"></span>인물</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#8B857A"></span>장소</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#8C2F26;border:2px solid #fff;box-shadow:0 0 0 1px #8C2F26"></span>인물 (이후 친일 전향)</div>
+    </div>
+  `;
+  panel.querySelectorAll('.rel-item').forEach(el => {
+    el.onclick = () => { const nd = nodeById.get(el.dataset.id); if (nd) showPanel(nd); };
+  });
+}
+
+window.addEventListener('resize', () => {
+  W = wrap.clientWidth; H = window.innerHeight - 92;
+  svg.attr("width", W).attr("height", H);
+  sim.force("center", d3.forceCenter(W/2, H/2));
+  sim.alpha(0.3).restart();
+});
+</script>
+</body>
+</html>

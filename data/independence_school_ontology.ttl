@@ -1,0 +1,432 @@
+@prefix : <http://example.org/independence-school#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/independence-school> rdf:type owl:Ontology ;
+    rdfs:label "일제강점기 독립운동-근대학교 연결 온톨로지"@ko ;
+    rdfs:comment "독립운동가, 근대학교, 단체, 사건 간의 관계를 구조화. 사실관계는 우리역사넷/한국민족문화대백과사전/위키백과/나무위키 교차 확인." .
+
+
+### ============================
+### 1. 클래스 (Classes)
+### ============================
+
+:Person rdf:type owl:Class .
+:IndependenceActivist rdf:type owl:Class ; rdfs:subClassOf :Person .
+:Educator rdf:type owl:Class ; rdfs:subClassOf :Person .
+:Missionary rdf:type owl:Class ; rdfs:subClassOf :Person .
+
+:Organization rdf:type owl:Class .
+:School rdf:type owl:Class ; rdfs:subClassOf :Organization .
+:IndependenceMovementGroup rdf:type owl:Class ; rdfs:subClassOf :Organization .
+:ReligiousOrganization rdf:type owl:Class ; rdfs:subClassOf :Organization .
+
+:Event rdf:type owl:Class .
+:PoliticalMovement rdf:type owl:Class ; rdfs:subClassOf :Event .
+:Incident rdf:type owl:Class ; rdfs:subClassOf :Event .
+:Battle rdf:type owl:Class ; rdfs:subClassOf :Event .
+
+:Place rdf:type owl:Class .
+
+
+### ============================
+### 2. 관계 (Object Properties)
+### ============================
+
+:foundedSchool rdf:type owl:ObjectProperty ;
+    rdfs:domain :Person ; rdfs:range :School ;
+    rdfs:comment "인물이 학교를 설립함" .
+
+:taughtAt rdf:type owl:ObjectProperty ;
+    rdfs:domain :Person ; rdfs:range :School ;
+    rdfs:comment "인물이 해당 학교에서 교사/교장으로 재직함" .
+
+:graduatedFrom rdf:type owl:ObjectProperty ;
+    rdfs:domain :Person ; rdfs:range :School .
+
+:administeredSchool rdf:type owl:ObjectProperty ;
+    rdfs:domain :Person ; rdfs:range :School ;
+    rdfs:comment "학교 경영/운영을 맡음 (설립자는 아니지만 경영 책임자)" .
+
+:memberOf rdf:type owl:ObjectProperty ;
+    rdfs:domain :Person ; rdfs:range :Organization .
+
+:foundedOrg rdf:type owl:ObjectProperty ;
+    rdfs:domain :Person ; rdfs:range :Organization ;
+    rdfs:comment "인물이 단체(학교 아닌 조직)를 창설함" .
+
+:participatedIn rdf:type owl:ObjectProperty ;
+    rdfs:domain :Person ; rdfs:range :Event .
+
+:mentoredBy rdf:type owl:ObjectProperty ;
+    rdfs:domain :Person ; rdfs:range :Person ;
+    rdfs:comment "사제 관계 (배운 사람 -> 가르친 사람)" .
+
+:influencedBy rdf:type owl:ObjectProperty ;
+    rdfs:domain :Person ; rdfs:range :Person .
+
+:establishedByOrg rdf:type owl:ObjectProperty ;
+    rdfs:domain :School ; rdfs:range :IndependenceMovementGroup ;
+    rdfs:comment "학교가 특정 단체의 노선/관여로 설립됨" .
+
+:modeledAfter rdf:type owl:ObjectProperty ;
+    rdfs:domain :School ; rdfs:range :School ;
+    rdfs:comment "다른 학교를 벤치마킹하여 설립됨" .
+
+:acquiredBy rdf:type owl:ObjectProperty ;
+    rdfs:domain :School ; rdfs:range :Organization ;
+    rdfs:comment "학교의 경영권이 다른 단체에 인수됨" .
+
+:locatedIn rdf:type owl:ObjectProperty ;
+    rdfs:domain :Organization ; rdfs:range :Place .
+
+:ledTo rdf:type owl:ObjectProperty ;
+    rdfs:domain :Event ; rdfs:range :Event ;
+    rdfs:comment "한 사건이 다른 사건으로 확대/이어짐" .
+
+
+### ============================
+### 3. 속성 (Data Properties)
+### ============================
+
+:name rdf:type owl:DatatypeProperty ; rdfs:domain :Person ; rdfs:range xsd:string .
+:birthYear rdf:type owl:DatatypeProperty ; rdfs:domain :Person ; rdfs:range xsd:gYear .
+:deathYear rdf:type owl:DatatypeProperty ; rdfs:domain :Person ; rdfs:range xsd:gYear .
+:foundedYear rdf:type owl:DatatypeProperty ; rdfs:domain :Organization ; rdfs:range xsd:gYear .
+:eventYear rdf:type owl:DatatypeProperty ; rdfs:domain :Event ; rdfs:range xsd:gYear .
+
+
+### ============================
+### 4. 개체 (Individuals) - 팩트체크된 실제 사례
+### ============================
+
+## --- 장소 ---
+:정주 rdf:type :Place .
+:평양 rdf:type :Place .
+:서울 rdf:type :Place ; rdfs:comment "당시 한성"@ko .
+
+## --- 단체 ---
+:신민회 rdf:type :IndependenceMovementGroup ;
+    :foundedYear "1907"^^xsd:gYear ;
+    :locatedIn :평양 .
+
+:대한독립군 rdf:type :IndependenceMovementGroup ;
+    :foundedYear "1919"^^xsd:gYear ;
+    rdfs:comment "1919년 3.1운동 직후 홍범도가 창설. 신민회 계열(계몽운동)과는 다른 만주 무장투쟁 계열."@ko .
+
+:천도교 rdf:type :ReligiousOrganization .
+
+## --- 학교 ---
+:오산학교 rdf:type :School ;
+    :foundedYear "1907"^^xsd:gYear ;
+    :locatedIn :정주 ;
+    :establishedByOrg :신민회 ;
+    :modeledAfter :대성학교 .
+
+:대성학교 rdf:type :School ;
+    :locatedIn :평양 ;
+    :establishedByOrg :신민회 .
+
+:숭실학교 rdf:type :School ;
+    :foundedYear "1897"^^xsd:gYear ;
+    :locatedIn :평양 ;
+    rdfs:comment "미국 북장로교 선교사 배위량이 설립한 개신교 미션스쿨. 105인사건, 3.1운동 등 항일운동의 중심지 역할."@ko .
+
+:보성학교 rdf:type :School ;
+    :foundedYear "1905"^^xsd:gYear ;
+    :locatedIn :서울 ;
+    :acquiredBy :천도교 ;
+    rdfs:comment "보성전문학교(현 고려대 전신). 부속 인쇄소 보성사에서 3.1운동 독립선언문 인쇄."@ko .
+
+## --- 사건 ---
+:삼일운동 rdf:type :PoliticalMovement ;
+    :eventYear "1919"^^xsd:gYear .
+
+:안악사건 rdf:type :Incident ;
+    :eventYear "1910"^^xsd:gYear ;
+    :ledTo :백오인사건 ;
+    rdfs:comment "안명근이 서간도 무관학교 설립자금을 모집하다 황해도 신천에서 체포된 사건. 일제가 이를 확대해 105인사건으로 조작."@ko .
+
+:백오인사건 rdf:type :Incident ;
+    :eventYear "1911"^^xsd:gYear ;
+    rdfs:label "105인 사건"@ko .
+
+:봉오동전투 rdf:type :Battle ;
+    :eventYear "1920"^^xsd:gYear ;
+    rdfs:comment "홍범도의 대한독립군이 일본군을 대파한 전투."@ko .
+
+## --- 인물 ---
+:이승훈 rdf:type :IndependenceActivist, :Educator ;
+    :name "이승훈(李昇薰)"@ko ;
+    :birthYear "1864"^^xsd:gYear ;
+    :deathYear "1930"^^xsd:gYear ;
+    :foundedSchool :오산학교 ;
+    :taughtAt :오산학교 ;
+    :memberOf :신민회 ;
+    :participatedIn :삼일운동 ;
+    :participatedIn :백오인사건 ;
+    :influencedBy :안창호 .
+
+:안창호 rdf:type :IndependenceActivist, :Educator ;
+    :name "안창호(安昌浩)"@ko ;
+    :foundedSchool :대성학교 ;
+    :memberOf :신민회 .
+
+:조만식 rdf:type :IndependenceActivist, :Educator ;
+    :name "조만식(曺晩植)"@ko ;
+    :taughtAt :오산학교 .
+
+:유영모 rdf:type :Educator ;
+    :name "유영모(柳永模)"@ko ;
+    :taughtAt :오산학교 .
+
+:함석헌 rdf:type :Person ;
+    :name "함석헌(咸錫憲)"@ko ;
+    :graduatedFrom :오산학교 ;
+    :mentoredBy :유영모 .
+
+:양기탁 rdf:type :IndependenceActivist ;
+    :name "양기탁(梁起鐸)"@ko ;
+    :memberOf :신민회 .
+
+:안명근 rdf:type :IndependenceActivist ;
+    :name "안명근(安明根)"@ko ;
+    :participatedIn :안악사건 ;
+    rdfs:comment "안중근의 사촌동생. 서간도 무관학교 설립자금을 모집하다 체포됨."@ko .
+
+:홍범도 rdf:type :IndependenceActivist ;
+    :name "홍범도(洪範圖)"@ko ;
+    :birthYear "1868"^^xsd:gYear ;
+    :deathYear "1943"^^xsd:gYear ;
+    :foundedOrg :대한독립군 ;
+    :participatedIn :봉오동전투 .
+
+:배위량 rdf:type :Missionary, :Educator ;
+    :name "배위량(裵緯良, W.M.Baird)"@ko ;
+    :foundedSchool :숭실학교 .
+
+:최광옥 rdf:type :IndependenceActivist, :Educator ;
+    :name "최광옥(崔光玉)"@ko ;
+    :graduatedFrom :숭실학교 ;
+    :memberOf :신민회 ;
+    rdfs:comment "숭실학교 1회 졸업생이면서 신민회 평안남도 조직을 이끔 - 학교와 단체를 잇는 핵심 연결고리."@ko .
+
+:차이석 rdf:type :IndependenceActivist ;
+    :name "차이석(車利錫)"@ko ;
+    :graduatedFrom :숭실학교 ;
+    rdfs:comment "대한민국 임시정부 요인. 숭실학교 1회 졸업생."@ko .
+
+:이용익 rdf:type :Educator ;
+    :name "이용익(李容翊)"@ko ;
+    :deathYear "1907"^^xsd:gYear ;
+    :foundedSchool :보성학교 .
+
+:이종호 rdf:type :IndependenceActivist ;
+    :name "이종호(李鍾浩)"@ko ;
+    :administeredSchool :보성학교 ;
+    :memberOf :신민회 ;
+    rdfs:comment "이용익의 손자. 보성학교 경영 책임을 맡았으며 신민회에 가담, 1909년 안중근 의거의 국내 배후 인물로 지목되어 중국 망명."@ko .
+
+:손병희 rdf:type :IndependenceActivist ;
+    :name "손병희(孫秉熙)"@ko ;
+    :memberOf :천도교 ;
+    :participatedIn :삼일운동 ;
+    rdfs:comment "민족대표 33인 중 최고 핵심 인물. 천도교 지도자로서 보성학교 인수를 주도."@ko .
+
+
+### ============================
+### 5. 확장 - 신흥무관학교 (신민회-무장투쟁 계열을 잇는 다리)
+### ============================
+
+:MilitaryAcademy rdf:type owl:Class ; rdfs:subClassOf :School .
+
+:printedAt rdf:type owl:ObjectProperty ;
+    rdfs:domain :Event ; rdfs:range :School ;
+    rdfs:comment "사건 관련 문서(선언서 등)가 해당 학교 부속기관에서 인쇄됨" .
+
+## --- 장소 ---
+:서간도 rdf:type :Place .
+
+## --- 학교 ---
+:신흥무관학교 rdf:type :School, :MilitaryAcademy ;
+    :foundedYear "1911"^^xsd:gYear ;
+    :locatedIn :서간도 ;
+    :establishedByOrg :신민회 ;
+    rdfs:comment "신민회가 1910년 국외 무관학교 설립을 결의한 데 따라 이회영 등이 서간도에 설립. 1920년까지 약 3500명 졸업생 배출. 신민회(계몽운동)와 무장투쟁 계열을 잇는 핵심 연결고리."@ko .
+
+## --- 인물 ---
+:이회영 rdf:type :IndependenceActivist ;
+    :name "이회영(李會榮)"@ko ;
+    :foundedSchool :신흥무관학교 ;
+    :memberOf :신민회 ;
+    rdfs:comment "신민회 발족과 헤이그특사 파견을 주도. 6형제와 함께 전 재산을 처분해 서간도로 망명, 신흥무관학교 설립을 이끔."@ko .
+
+:이시영 rdf:type :IndependenceActivist ;
+    :name "이시영(李始榮)"@ko ;
+    :foundedSchool :신흥무관학교 ;
+    :memberOf :신민회 ;
+    rdfs:comment "이후 대한민국 임시정부 참여, 광복 후 초대 대한민국 부통령."@ko .
+
+:이동녕 rdf:type :IndependenceActivist ;
+    :name "이동녕(李東寧)"@ko ;
+    :foundedSchool :신흥무관학교 .
+
+:이상룡 rdf:type :IndependenceActivist ;
+    :name "이상룡(李相龍)"@ko ;
+    :foundedSchool :신흥무관학교 ;
+    :influencedBy :양기탁 ;
+    rdfs:comment "안동 유림 명문가 출신. 양기탁 등 신민회 운동가의 권유로 만주 이주."@ko .
+
+:지청천 rdf:type :IndependenceActivist ;
+    :name "지청천(池靑天)"@ko ;
+    :taughtAt :신흥무관학교 ;
+    rdfs:comment "일본육군사관학교 출신 현역 장교였으나 1919년 3.1운동 이후 망명해 신흥무관학교 교관으로 합류. 이후 광복군 총사령관 역임."@ko .
+
+
+### ============================
+### 6. 확장 - 3.1운동 민족대표 33인 (일부) 및 보성학교 연결
+### ============================
+
+:이종일 rdf:type :IndependenceActivist ;
+    :name "이종일(李鍾一)"@ko ;
+    :administeredSchool :보성학교 ;
+    :participatedIn :삼일운동 ;
+    rdfs:comment "천도교 경영 보성사(보성학교 부속 인쇄소) 사장. 독립선언서 2만1천매를 인쇄." .
+
+:삼일운동 :printedAt :보성학교 .
+
+:한용운 rdf:type :IndependenceActivist ;
+    :name "한용운(韓龍雲)"@ko ;
+    :birthYear "1879"^^xsd:gYear ;
+    :deathYear "1944"^^xsd:gYear ;
+    :participatedIn :삼일운동 ;
+    rdfs:comment "민족대표 33인 중 불교계 대표. 시인." .
+
+:오세창 rdf:type :IndependenceActivist ;
+    :name "오세창(吳世昌)"@ko ;
+    :memberOf :천도교 ;
+    :participatedIn :삼일운동 ;
+    rdfs:comment "민족대표 33인 중 천도교 대표. 독립선언서 원고를 보성사로 전달." .
+
+
+### ============================
+### 7. 확장 - 청산리전투 (신흥무관학교→무장투쟁 계열의 실제 연결고리)
+### ============================
+
+## --- 단체 ---
+:북로군정서 rdf:type :IndependenceMovementGroup ;
+    :foundedYear "1919"^^xsd:gYear ;
+    rdfs:comment "1919년 8월 서일·김좌진 등이 조직. 자체 사관연성소 운영." .
+
+## --- 사건 ---
+:청산리전투 rdf:type :Battle ;
+    :eventYear "1920"^^xsd:gYear ;
+    rdfs:label "청산리대첩"@ko ;
+    rdfs:comment "김좌진의 북로군정서와 홍범도의 대한독립군이 연합하여 일본군을 대파." .
+
+:봉오동전투 :ledTo :청산리전투 .
+
+## --- 인물 ---
+:김좌진 rdf:type :IndependenceActivist ;
+    :name "김좌진(金佐鎭)"@ko ;
+    :birthYear "1889"^^xsd:gYear ;
+    :deathYear "1930"^^xsd:gYear ;
+    :memberOf :신민회 ;
+    :foundedOrg :북로군정서 ;
+    :participatedIn :청산리전투 ;
+    rdfs:comment "대한제국 육군무관학교 출신 장교. 신민회 등 계몽운동 단체에서 활동하다가 이후 북로군정서를 이끌고 청산리대첩 지휘 - 계몽운동 계열과 무장투쟁 계열을 한 몸으로 잇는 인물." .
+
+:서일 rdf:type :IndependenceActivist ;
+    :name "서일(徐一)"@ko ;
+    :foundedOrg :북로군정서 .
+
+:이범석 rdf:type :IndependenceActivist ;
+    :name "이범석(李範奭)"@ko ;
+    :taughtAt :신흥무관학교 ;
+    :memberOf :북로군정서 ;
+    :participatedIn :청산리전투 ;
+    rdfs:comment "중국 운남강무당 졸업 후 신흥무관학교에 교관으로 합류. 이후 북로군정서 사관연성소 연성대장으로 청산리전투 참전 - 신흥무관학교와 청산리전투를 직접 잇는 인물." .
+
+:홍범도 :participatedIn :청산리전투 .
+
+
+### ============================
+### 8. 확장 - 대한민국 임시정부 (각 계열이 다시 모이는 지점)
+### ============================
+
+:ProvisionalGovernment rdf:type owl:Class ; rdfs:subClassOf :Organization .
+
+:상해 rdf:type :Place .
+
+:대한민국임시정부 rdf:type :ProvisionalGovernment ;
+    :foundedYear "1919"^^xsd:gYear ;
+    :locatedIn :상해 ;
+    rdfs:comment "1919년 4월 11일 상해 수립. 오산학교/대성학교/숭실학교/신흥무관학교 출신 인물들이 다시 결집하는 지점." .
+
+:이승만 rdf:type :IndependenceActivist ;
+    :name "이승만(李承晩)"@ko ;
+    :memberOf :대한민국임시정부 ;
+    rdfs:comment "임시정부 초대 대통령." .
+
+:이동휘 rdf:type :IndependenceActivist ;
+    :name "이동휘(李東輝)"@ko ;
+    :memberOf :대한민국임시정부 ;
+    rdfs:comment "임시정부 국무총리." .
+
+:이시영 :memberOf :대한민국임시정부 .
+:이동녕 :memberOf :대한민국임시정부 .
+:안창호 :memberOf :대한민국임시정부 .
+:차이석 :memberOf :대한민국임시정부 .
+
+
+### ============================
+### 9. 확장 - 국내 계열의 재접속 (조만식-물산장려운동-신간회)
+### ============================
+
+## --- 단체 ---
+:조선물산장려회 rdf:type :IndependenceMovementGroup ;
+    :foundedYear "1920"^^xsd:gYear ;
+    :locatedIn :평양 .
+
+:신간회 rdf:type :IndependenceMovementGroup ;
+    :foundedYear "1927"^^xsd:gYear ;
+    rdfs:comment "민족주의 계열과 사회주의 계열의 민족협동전선." .
+
+## --- 사건(운동) ---
+:물산장려운동 rdf:type :PoliticalMovement ;
+    :eventYear "1920"^^xsd:gYear .
+
+## --- 조만식 정보 갱신 ---
+:조만식 :participatedIn :삼일운동 ;
+    :foundedOrg :조선물산장려회 ;
+    :participatedIn :물산장려운동 ;
+    :memberOf :신간회 ;
+    rdfs:comment "오산학교 교사·교장 역임 후 3.1운동 가담으로 옥고. 출옥 후 조선물산장려회·신간회를 창립/주도 - 해외로 망명하지 않고 국내에서 계몽운동 노선을 이어간 계열." .
+
+
+### ============================
+### 10. 확장 - 시간에 따른 지위 변화 (친일 전향 사례)
+### ============================
+
+:ColonialCollaborator rdf:type owl:Class ;
+    rdfs:comment "이후 친일 행위로 전향한 인물. 'IndependenceActivist' 단일 클래스로는 인물의 생애 전체(시간에 따른 정치적 지위 변화)를 포착할 수 없음을 보여주는 사례 - 온톨로지 설계상 정적 분류(static classification)의 한계를 드러냄."@ko .
+
+:최린 rdf:type :IndependenceActivist, :ColonialCollaborator ;
+    :name "최린(崔麟)"@ko ;
+    :memberOf :천도교 ;
+    :participatedIn :삼일운동 ;
+    rdfs:comment "독립선언서 초안 작성. 이후 변절해 1934년 중추원 참의, 1937년 매일신보 사장, 1939년 임전보국단장 역임. 6.25전쟁 때 납북." .
+
+:정춘수 rdf:type :IndependenceActivist, :ColonialCollaborator ;
+    :name "정춘수(鄭春洙)"@ko ;
+    :participatedIn :삼일운동 ;
+    rdfs:comment "감리회 목사로 원산 만세운동 지도. 1934년 흥업구락부 사건으로 전향서 작성 후 석방, 이후 신사참배·창씨개명·자원병 가담 독려 등 적극 친일 행적." .
+
+:박희도 rdf:type :IndependenceActivist, :ColonialCollaborator ;
+    :name "박희도(朴熙道)"@ko ;
+    :graduatedFrom :숭실학교 ;
+    :participatedIn :삼일운동 ;
+    :memberOf :신간회 ;
+    rdfs:comment "평양 숭실중학교 졸업. 3.1운동으로 옥고 3년, 잡지 『신생활』 발간, 신간회 활동. 이후 전향해 친일반민족행위자로 규정됨 - 숭실학교 출신이면서 지위가 바뀐 사례." .
