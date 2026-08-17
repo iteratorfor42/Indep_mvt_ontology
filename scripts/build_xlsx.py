@@ -1,23 +1,25 @@
 """
-CSV(independence_ontology_factcheck.csv)를 읽어 서식이 적용된
-independence_ontology_factcheck.xlsx 를 생성하는 스크립트.
+CSV(data/independence_ontology_factcheck.csv)를 읽어 서식이 적용된
+data/independence_ontology_factcheck.xlsx 를 생성하는 스크립트.
 
 사용법:
-1. VSCode에서 independence_ontology_factcheck.csv 를 열어 내용 수정
-2. 터미널에서 실행:  python3 build_xlsx.py
-3. 같은 폴더에 independence_ontology_factcheck.xlsx 가 생성/갱신됨
-4. (선택) 수식 캐시 값을 채우려면:
-   python3 recalc.py independence_ontology_factcheck.xlsx
-   (recalc.py는 /mnt/skills/public/xlsx/scripts/recalc.py 참고)
+1. VSCode에서 data/independence_ontology_factcheck.csv 를 열어 내용 수정
+2. 터미널에서 실행:  python scripts/build_xlsx.py
 """
 
 import csv
+import os
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-CSV_PATH = "independence_ontology_factcheck.csv"
-XLSX_PATH = "independence_ontology_factcheck.xlsx"
+# 현재 스크립트(scripts/build_xlsx.py) 폴더 기준으로 프로젝트 루트 및 data 폴더 경로 설정
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+
+CSV_PATH = os.path.join(DATA_DIR, "independence_ontology_factcheck.csv")
+XLSX_PATH = os.path.join(DATA_DIR, "independence_ontology_factcheck.xlsx")
 
 # ---- 1. CSV 읽기 ----
 with open(CSV_PATH, encoding="utf-8-sig") as f:
