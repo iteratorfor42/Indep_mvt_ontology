@@ -5,6 +5,10 @@ data/independence_ontology_factcheck.xlsx 를 생성하는 스크립트.
 사용법:
 1. VSCode에서 data/independence_ontology_factcheck.csv 를 열어 내용 수정
 2. 터미널에서 실행:  python scripts/build_xlsx.py
+
+보완>
+CSV(data/independence_ontology_factcheck.csv)를 읽어 서식이 적용된
+output/independence_ontology_factcheck_XX.xlsx (01, 02, 03... 자동 번호 증가)를 생성하는 스크립트.
 """
 
 import csv
@@ -13,13 +17,30 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-# 현재 스크립트(scripts/build_xlsx.py) 폴더 기준으로 프로젝트 루트 및 data 폴더 경로 설정
+# 경로 설정
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "output")
+
+# output 폴더가 없으면 자동 생성
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 CSV_PATH = os.path.join(DATA_DIR, "independence_ontology_factcheck.csv")
-XLSX_PATH = os.path.join(DATA_DIR, "independence_ontology_factcheck.xlsx")
+
+# output 폴더 내 번호(01, 02, 03...) 자동 채번 함수
+def get_next_xlsx_path(output_dir, base_name="independence_ontology_factcheck"):
+    i = 1
+    while True:
+        num_str = f"{i:02d}"  # 01, 02, 03 형식
+        filename = f"{base_name}_{num_str}.xlsx"
+        full_path = os.path.join(output_dir, filename)
+        if not os.path.exists(full_path):
+            return full_path
+        i += 1
+
+XLSX_PATH = get_next_xlsx_path(OUTPUT_DIR)
 
 # ---- 1. CSV 읽기 ----
 with open(CSV_PATH, encoding="utf-8-sig") as f:
@@ -69,10 +90,9 @@ for row in ws.iter_rows(min_row=2, max_row=ws.max_row, max_col=8):
 ws.freeze_panes = "A2"
 ws.auto_filter.ref = f"A1:H{ws.max_row}"
 
-# ---- 3. 요약 시트 (CSV 행수에 맞춰 수식 범위 자동 조정) ----
+# ---- 3. 요약 시트 ----
 ws2 = wb.create_sheet("요약")
 
-# 분류별 개수는 데이터 기준으로 자동 계산
 from collections import Counter
 cat_counts = Counter(r[1] for r in rows if len(r) > 1)
 
@@ -105,4 +125,3 @@ ws2.column_dimensions["B"].width = 70
 
 wb.save(XLSX_PATH)
 print(f"저장 완료: {XLSX_PATH} (데이터 {len(rows)}행)")
-print("※ 수식 캐시 값을 채우려면 recalc.py를 실행하세요.")
