@@ -65,7 +65,7 @@
     rdfs:comment "사제 관계 (배운 사람 -> 가르친 사람)" .
 
 :influencedBy rdf:type owl:ObjectProperty ;
-    rdfs:domain :Person ; rdfs:range :Person .
+    rdfs:domain :Person ; rdfs:range :Person .S
 
 :establishedByOrg rdf:type owl:ObjectProperty ;
     rdfs:domain :School ; rdfs:range :IndependenceMovementGroup ;
