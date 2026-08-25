@@ -1,0 +1,949 @@
+@prefix : <http://dh.aks.ac.kr/ontologies/independence/schoolsystem#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+
+<http://dh.aks.ac.kr/ontologies/independence/schoolsystem>
+    rdf:type owl:Ontology ;
+    rdfs:label "시맨틱데이터 아카이브의 구축과 활용 — 독립운동-근대학교 제도·인사 온톨로지 (핵심 패턴 ver)"@ko ;
+    rdfs:comment "김바로, 「제도-인사 온톨로지 설계」(한국학중앙연구원 한국학대학원 박사논문) 의 학술모델·추정모델·조직모델·사건모델·공리 설계를 그대로 준용하여, 독립운동-근대학교 도메인의 핵심 패턴 4종(설립, 임명/역할변화, 사건확대, 조직승계)을 재현함."@ko .
+
+### ============================================================
+### v4 변경사항 (v3 검증 후 "보완이 쉬운 것" 위주로 수정)
+### 1. hasCompiler/hascompiledTime을 미기입 상태였던 65개 Event에 전부 추가
+###    (편찬자는 8절 예시와 동일한 :iteratorfor42 placeholder를 그대로 사용 -
+###     실제 연구자 본인 개체로 교체 필요, 아래 "다음 작업" 참조)
+### 2. :백오인사건의 Group/Event 이중 타입 선언 충돌 해소 (Event로 단일화)
+### 3. 천도교 관련 이벤트 3건(손병희/오세창/최린 소속천도교)에
+###    "이번 확장에서 재검색하지 않음 - 재검증 권장" 표시를 실제로 추가
+###    (v3에서는 "표시해뒀다"고 했으나 실제 파일엔 표시가 없었던 것을 바로잡음)
+### 4. 중복 개체 제거: :이승훈설립오산학교_01(시간정보 미상)이
+###    :19071201이승훈설립_01(시간값·추정범위·출처 모두 갖춤)과 동일 사실을
+###    가리키는 별도 URI로 중복 존재하던 것을 발견, 정보가 더 온전한 쪽만 남김
+###
+### 이번 버전에서 손대지 않은 것(쉬운 보완이 아니라 별도 조사가 필요한 항목):
+### hasWebResource(항목별 실제 permalink), 시간정보 미상 52건의 추정치 보강,
+### hasCompiler의 placeholder를 실제 연구자 개체로 교체
+### ============================================================
+
+### ============================================================
+### v5 변경사항
+### hasCompiler placeholder(:김바로_예시편찬자)를 실제 편찬자 개체 :iteratorfor42로
+### 전체 68회 일괄 치환. Person 선언의 rdfs:comment도 placeholder 안내문에서
+### 실제 편찬자 설명으로 정정.
+### 남은 작업: hasWebResource 항목별 실제 permalink, 시간정보 미상 52건 보강
+### ============================================================
+
+
+### ============================================================
+### 1. 클래스 설계 (원 논문 표 Ⅳ-1 그대로 준용, 도메인만 교체)
+### ============================================================
+
+:System rdf:type owl:Class ; rdfs:label "제도"@ko ;
+    rdfs:comment "제도에 관한 정보. 본 도메인에서는 학교 직제·신민회 조직 규정 등."@ko .
+
+:Term rdf:type owl:Class ; rdfs:label "용어"@ko ;
+    rdfs:comment "직위·직급·훈격·사건유형 등 용어에 관한 정보."@ko .
+
+:Event rdf:type owl:Class ; rdfs:label "사건"@ko ;
+    rdfs:comment "제도·조직·인물에 관한 사건 정보. 설립/임명/해임/전향/확대 등 모든 변화는 이 단일 클래스로 표현하며, 별도의 하위 이벤트 클래스를 만들지 않는다 (원 논문 설계 원칙)."@ko .
+
+:Group rdf:type owl:Class ; rdfs:label "조직"@ko ;
+    rdfs:comment "학교·단체 등 조직에 관한 정보."@ko .
+
+:Person rdf:type owl:Class ; rdfs:label "인물"@ko .
+
+
+### ============================================================
+### 2. 학술모델 (원문 IV장 1절 그대로 준용)
+### ============================================================
+
+:hasCompiler rdf:type owl:ObjectProperty ; rdfs:domain owl:Thing ; rdfs:range :Person ;
+    rdfs:comment "이 정보를 원문에서 추출/편찬한 사람."@ko .
+
+:hascompiledTime rdf:type owl:DatatypeProperty ; rdfs:domain owl:Thing ; rdfs:range xsd:dateTime ;
+    rdfs:comment "편찬시기."@ko .
+
+:hasBibo rdf:type owl:DatatypeProperty ; rdfs:domain owl:Thing ; rdfs:range rdfs:Literal ;
+    rdfs:comment "전통형 서지출처 표기."@ko .
+
+:hasWebResource rdf:type owl:DatatypeProperty ; rdfs:domain owl:Thing ; rdfs:range rdfs:Literal ;
+    rdfs:comment "근거 자료의 웹 URL."@ko .
+
+
+### ============================================================
+### 3. 추정모델 (원문 IV장 1절, 시간/공간 불확실성 구조화)
+### ============================================================
+
+:hasEestimation rdf:type owl:DatatypeProperty ; rdfs:domain owl:Thing ; rdfs:range xsd:boolean ;
+    rdfs:comment "0=확실, 1=추정."@ko .
+
+:hasTimeEestimationRangeValue rdf:type owl:DatatypeProperty ; rdfs:domain owl:Thing ; rdfs:range xsd:int .
+:hasTimeEestimationRangeType rdf:type owl:DatatypeProperty ; rdfs:domain owl:Thing ; rdfs:range rdfs:Literal ;
+    rdfs:comment "Year | Month | Day 중 하나."@ko .
+
+:hasSpaceEestimationRangeValue rdf:type owl:DatatypeProperty ; rdfs:domain owl:Thing ; rdfs:range xsd:int .
+:hasSpaceEestimationRangeType rdf:type owl:DatatypeProperty ; rdfs:domain owl:Thing ; rdfs:range rdfs:Literal ;
+    rdfs:comment "km | m 중 하나."@ko .
+
+
+### ============================================================
+### 4. 조직모델 - 승계관계 세분화 (원문 III장 2절 (1))
+### ============================================================
+
+:hasGroupAlias rdf:type owl:ObjectProperty ; rdfs:domain :Group ; rdfs:range :Group ;
+    rdfs:comment "조직의 이칭."@ko .
+:hasGroupPart rdf:type owl:ObjectProperty ; rdfs:domain :Group ; rdfs:range :Group .
+:isGroupPartOf rdf:type owl:ObjectProperty ; rdfs:domain :Group ; rdfs:range :Group ;
+    owl:inverseOf :hasGroupPart .
+
+:succeedTo rdf:type owl:ObjectProperty ; rdfs:domain :Group ; rdfs:range :Group ;
+    rdfs:comment "조직이 다른 조직을 승계함 (상위 개념)."@ko .
+:succeedByLawTo rdf:type owl:ObjectProperty ; rdfs:subPropertyOf :succeedTo ;
+    rdfs:comment "법률/결의를 통한 승계."@ko .
+:succeedByPersonTo rdf:type owl:ObjectProperty ; rdfs:subPropertyOf :succeedTo ;
+    rdfs:comment "인물을 통한 승계 (같은 설립자가 이어 설립)."@ko .
+:succeedBySpaceTo rdf:type owl:ObjectProperty ; rdfs:subPropertyOf :succeedTo ;
+    rdfs:comment "공간(장소)을 통한 승계."@ko .
+
+:hasSpaceValue rdf:type owl:DatatypeProperty ; rdfs:domain owl:Thing ; rdfs:range rdfs:Literal .
+:hasLatitude rdf:type owl:DatatypeProperty ; owl:equivalentProperty geo:lat .
+:hasLongitude rdf:type owl:DatatypeProperty ; owl:equivalentProperty geo:long .
+
+
+### ============================================================
+### 5. 사건모델 - 단일 스키마 (원문 III장 3절, 핵심 설계원칙)
+### ============================================================
+
+:hasObject rdf:type owl:ObjectProperty ; rdfs:domain :Event ; rdfs:range owl:Thing ;
+    rdfs:comment "사건의 주체."@ko .
+:hasPreObject rdf:type owl:ObjectProperty ; rdfs:domain :Event ; rdfs:range owl:Thing ;
+    rdfs:comment "사건 발생 이전 상태의 대상 (여러 개 가능)."@ko .
+:hasPostObject rdf:type owl:ObjectProperty ; rdfs:domain :Event ; rdfs:range owl:Thing ;
+    rdfs:comment "사건 발생 이후 상태의 대상 (여러 개 가능)."@ko .
+:hasEventType rdf:type owl:ObjectProperty ; rdfs:domain :Event ; rdfs:range :Term .
+:hasTimeValue rdf:type owl:DatatypeProperty ; rdfs:domain owl:Thing ; rdfs:range xsd:dateTime .
+
+
+### ============================================================
+### 6. 사건유형 시소러스 (원문 III장 3절 (5))
+### ============================================================
+
+:hasBT rdf:type owl:ObjectProperty ; rdfs:domain :Term ; rdfs:range :Term ; rdfs:comment "상위어."@ko .
+:hasNT rdf:type owl:ObjectProperty ; rdfs:domain :Term ; rdfs:range :Term ; rdfs:comment "하위어."@ko .
+:hasUF rdf:type owl:ObjectProperty ; rdfs:domain :Term ; rdfs:range :Term ; rdfs:comment "동의어(시대에 따른 표현 차이 등)."@ko .
+
+:설립 rdf:type :Term . :임명 rdf:type :Term . :해임 rdf:type :Term .
+:전향 rdf:type :Term . :확대 rdf:type :Term . :소속 rdf:type :Term .
+:일반임명 rdf:type :Term ; :hasBT :임명 .
+:피포상철회 rdf:type :Term ; :hasBT :해임 ;
+    rdfs:comment "독립유공자 서훈이 이후 취소/철회된 경우 (친일 전향 등으로). 원문의 免本任->解任 UF 관계처럼, 시기에 따라 다른 절차명을 쓸 수 있어 시소러스로 관리."@ko .
+
+
+### ============================================================
+### 7. 공리 설계 (원문 IV장 2절 4)
+### ============================================================
+# 재직기간 = (해임 hasTimeValue) - (임명 hasTimeValue)
+# 기관존속기간 = (폐교 hasTimeValue) - (개교 hasTimeValue)
+# 추정치인 경우 최대/최소 존속기간을 추정범위값을 가감하여 별도 계산 (원문 방식 그대로 적용, SPARQL/추론엔진 단에서 구현 예정)
+
+
+### ============================================================
+### 8. 실제 인스턴스 - 핵심 패턴 4종
+### ============================================================
+
+## --- 조직 ---
+:신민회 rdf:type :Group .
+:오산학교 rdf:type :Group .
+:대성학교 rdf:type :Group .
+
+# 조직승계 예시: 오산학교는 신민회의 노선(법률/결의)에 따라 설립되었고,
+# 안창호가 세운 대성학교를 인물/노선상 모델로 삼음 -> succeedByPersonTo 로 표현
+:오산학교 :succeedByPersonTo :대성학교 ;
+    :hasSpaceValue "정주"@ko .
+
+## --- 인물 ---
+:이승훈 rdf:type :Person .
+:최린 rdf:type :Person .
+:안명근 rdf:type :Person .
+:iteratorfor42 rdf:type :Person ; rdfs:label "iteratorfor42"@ko ;
+    rdfs:comment "본 온톨로지의 편찬자(연구자 본인)."@ko .
+
+## --- 패턴 1: 설립 사건 (단일 사건스키마 적용) ---
+:19071201이승훈설립_01 rdf:type :Event ;
+    :hasObject :이승훈 ;
+    :hasPostObject :오산학교 ;
+    :hasEventType :설립 ;
+    :hasTimeValue "1907-12-01"^^xsd:dateTime ;
+    :hasEestimation "1"^^xsd:boolean ;
+    :hasTimeEestimationRangeValue 1 ;
+    :hasTimeEestimationRangeType "Month"@ko ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasBibo "한국민족문화대백과사전, '오산학교' 항목"@ko ;
+    :hasWebResource "https://encykorea.aks.ac.kr/" .
+
+## --- 패턴 2: 임명->전향 (역할 변화도 동일 사건스키마로 표현) ---
+:19190301최린임명_01 rdf:type :Event ;
+    :hasObject :최린 ;
+    :hasPreObject :천도교 ;
+    :hasPostObject :독립선언서초안작성자 ;
+    :hasEventType :임명 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1919-03-01"^^xsd:dateTime ;
+    :hasEestimation "0"^^xsd:boolean ;
+    :hasBibo "한국민족문화대백과사전, '최린' 항목"@ko .
+
+:19340101최린전향_01 rdf:type :Event ;
+    :hasObject :최린 ;
+    :hasPreObject :독립선언서초안작성자 ;
+    :hasPostObject :중추원참의 ;
+    :hasEventType :전향 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1934-01-01"^^xsd:dateTime ;
+    :hasEestimation "1"^^xsd:boolean ;
+    :hasTimeEestimationRangeValue 1 ;
+    :hasTimeEestimationRangeType "Year"@ko ;
+    :hasBibo "한국민족문화대백과사전, '최린' 항목"@ko ;
+    rdfs:comment "원문 하나로는 최린이 '몇 년도에 정확히 전향했는가'를 특정하기 어려워 연단위 추정으로 처리. 이것이 v2에서 ColonialCollaborator 클래스로 뭉뚱그렸던 것을 두 개의 시점 사건으로 정확히 나눈 결과."@ko .
+
+:독립선언서초안작성자 rdf:type :Term .
+:중추원참의 rdf:type :Term .
+
+## --- 패턴 3: 사건 확대 (안악사건 -> 105인사건, 사건간 관계도 이벤트로) ---
+:19101101안명근체포_01 rdf:type :Event ;
+    :hasObject :안명근 ;
+    :hasEventType :임명 ;  # 원 논문 관례상 부정적 이벤트도 큰 틀에서 처리하되, 별도 유형 세분 가능
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1910-11-01"^^xsd:dateTime ;
+    :hasEestimation "1"^^xsd:boolean ;
+    :hasTimeEestimationRangeValue 10 ;
+    :hasTimeEestimationRangeType "Day"@ko ;
+    :hasBibo "우리역사넷, '안악사건' 항목"@ko .
+
+:19110101백오인사건확대_01 rdf:type :Event ;
+    :hasObject :신민회 ;
+    :hasPreObject :19101101안명근체포_01 ;
+    :hasPostObject :백오인사건 ;
+    :hasEventType :확대 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1911-01-01"^^xsd:dateTime ;
+    :hasEestimation "1"^^xsd:boolean ;
+    :hasTimeEestimationRangeValue 1 ;
+    :hasTimeEestimationRangeType "Year"@ko ;
+    :hasBibo "우리역사넷 / 한국민족문화대백과사전, '105인사건' 항목"@ko ;
+    rdfs:comment "사건이 사건을 hasPreObject로 참조 - 사건과 사건 간의 인과관계도 동일 스키마로 표현 가능함을 보여주는 예시. 원 논문에는 이 패턴이 명시적으로 없었으나, 단일 스키마 설계 원칙을 그대로 확장 적용."@ko .
+
+# v4 수정: :백오인사건을 Group으로도 이중 선언했던 부분을 제거함.
+# 아래 9절에서 :백오인사건 rdf:type :Event 로 단일 선언하며,
+# 삼일운동/안악사건/봉오동전투/청산리전투/물산장려운동과 동일한 패턴
+# (역사적 사건을 다른 Event의 hasPostObject 대상으로 참조 가능한 :Event 노드)으로 통일함.
+# v3의 "클래스 경계가 겹칠 수 있음" 코멘트는 실제로는 불필요한 이중타입이었던 것으로 판단하여 해소함.
+
+
+### ============================================================
+### 9. 47개체 전체 확장 (v1의 75관계를 v3 단일사건스키마로 변환)
+### 미완성 지점(사건-사건 인과 모델링, 체포류 이벤트유형 시소러스)은
+### 지난 단계에서 그대로 남겨두고, 여기서는 동일 패턴만 기계적으로 확장함.
+### ============================================================
+
+# --- 신규 사건유형 Term ---
+:재직 rdf:type :Term .
+:졸업 rdf:type :Term .
+:경영 rdf:type :Term .
+:사사 rdf:type :Term .
+:영향 rdf:type :Term .
+:참여 rdf:type :Term .
+:확대2 rdf:type :Term .
+
+# --- 개체 선언 (Person/Group/Event) ---
+:이승훈 rdf:type :Person .
+:안창호 rdf:type :Person .
+:조만식 rdf:type :Person .
+:유영모 rdf:type :Person .
+:함석헌 rdf:type :Person .
+:양기탁 rdf:type :Person .
+:안명근 rdf:type :Person .
+:홍범도 rdf:type :Person .
+:배위량 rdf:type :Person .
+:최광옥 rdf:type :Person .
+:차이석 rdf:type :Person .
+:이용익 rdf:type :Person .
+:이종호 rdf:type :Person .
+:손병희 rdf:type :Person .
+:이회영 rdf:type :Person .
+:이시영 rdf:type :Person .
+:이동녕 rdf:type :Person .
+:이상룡 rdf:type :Person .
+:지청천 rdf:type :Person .
+:이종일 rdf:type :Person .
+:한용운 rdf:type :Person .
+:오세창 rdf:type :Person .
+:김좌진 rdf:type :Person .
+:서일 rdf:type :Person .
+:이범석 rdf:type :Person .
+:이승만 rdf:type :Person .
+:이동휘 rdf:type :Person .
+:최린 rdf:type :Person .
+:정춘수 rdf:type :Person .
+:박희도 rdf:type :Person .
+:오산학교 rdf:type :Group .
+:대성학교 rdf:type :Group .
+:숭실학교 rdf:type :Group .
+:보성학교 rdf:type :Group .
+:신흥무관학교 rdf:type :Group .
+:신민회 rdf:type :Group .
+:대한독립군 rdf:type :Group .
+:천도교 rdf:type :Group .
+:북로군정서 rdf:type :Group .
+:대한민국임시정부 rdf:type :Group .
+:조선물산장려회 rdf:type :Group .
+:신간회 rdf:type :Group .
+:삼일운동 rdf:type :Event .
+:안악사건 rdf:type :Event .
+:백오인사건 rdf:type :Event .
+:봉오동전투 rdf:type :Event .
+:청산리전투 rdf:type :Event .
+:물산장려운동 rdf:type :Event .
+
+# --- 조직의 정적 사실(설립연도 등, 사건이 아닌 상태값) ---
+:hasFoundedYear rdf:type owl:DatatypeProperty ; rdfs:domain :Group ; rdfs:range xsd:gYear .
+:오산학교 :hasFoundedYear "1907"^^xsd:gYear .
+:숭실학교 :hasFoundedYear "1897"^^xsd:gYear .
+:보성학교 :hasFoundedYear "1905"^^xsd:gYear .
+:신흥무관학교 :hasFoundedYear "1911"^^xsd:gYear .
+:신민회 :hasFoundedYear "1907"^^xsd:gYear .
+:대한독립군 :hasFoundedYear "1919"^^xsd:gYear .
+:북로군정서 :hasFoundedYear "1919"^^xsd:gYear .
+:대한민국임시정부 :hasFoundedYear "1919"^^xsd:gYear .
+:조선물산장려회 :hasFoundedYear "1920"^^xsd:gYear .
+:신간회 :hasFoundedYear "1927"^^xsd:gYear .
+:삼일운동 :hasTimeValue "1919-01-01"^^xsd:dateTime .
+:안악사건 :hasTimeValue "1910-01-01"^^xsd:dateTime .
+:백오인사건 :hasTimeValue "1911-01-01"^^xsd:dateTime .
+:봉오동전투 :hasTimeValue "1920-01-01"^^xsd:dateTime .
+:청산리전투 :hasTimeValue "1920-01-01"^^xsd:dateTime .
+:물산장려운동 :hasTimeValue "1920-01-01"^^xsd:dateTime .
+
+# --- 인물-조직/사건 관계를 단일 사건스키마로 변환 ---
+# v4 수정: 여기 있던 :이승훈설립오산학교_01 (시간정보 미상)을 제거함.
+# 8절의 :19071201이승훈설립_01이 같은 사실(이승훈이 오산학교를 설립)을
+# 시간값·추정범위·hasCompiler·hasWebResource까지 갖춘 상태로 이미 존재하는데,
+# 47개체 확장 시 별도 URI로 다시 만들어 동일 사실이 중복 등록되어 있었음.
+# 두 개체 모두 다른 트리플에서 참조되지 않는 leaf node라 병합이 안전함을 확인 후 제거.
+
+:이승훈재직오산학교_01 rdf:type :Event ;
+    :hasObject :이승훈 ;
+    :hasPostObject :오산학교 ;
+    :hasEventType :재직 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이승훈' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '오산학교' 항목"@ko  .
+
+:이승훈소속신민회_01 rdf:type :Event ;
+    :hasObject :이승훈 ;
+    :hasPostObject :신민회 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이승훈' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '신민회' 항목"@ko  .
+
+:이승훈참여삼일운동_01 rdf:type :Event ;
+    :hasObject :이승훈 ;
+    :hasPostObject :삼일운동 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이승훈' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '삼일운동' 항목"@ko  .
+
+:이승훈참여백오인사건_01 rdf:type :Event ;
+    :hasObject :이승훈 ;
+    :hasPostObject :백오인사건 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이승훈' 항목"@ko ;
+    :hasBibo "우리역사넷, '백오인사건' 항목"@ko  .
+
+:이승훈영향안창호_01 rdf:type :Event ;
+    :hasObject :이승훈 ;
+    :hasPostObject :안창호 ;
+    :hasEventType :영향 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이승훈' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '안창호' 항목"@ko  .
+
+:안창호설립대성학교_01 rdf:type :Event ;
+    :hasObject :안창호 ;
+    :hasPostObject :대성학교 ;
+    :hasEventType :설립 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '안창호' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '대성학교' 항목"@ko  .
+
+:안창호소속신민회_01 rdf:type :Event ;
+    :hasObject :안창호 ;
+    :hasPostObject :신민회 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '안창호' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '신민회' 항목"@ko  .
+
+:안창호소속대한민국임시정부_01 rdf:type :Event ;
+    :hasObject :안창호 ;
+    :hasPostObject :대한민국임시정부 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '안창호' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '대한민국임시정부' 항목"@ko  .
+
+:조만식재직오산학교_01 rdf:type :Event ;
+    :hasObject :조만식 ;
+    :hasPostObject :오산학교 ;
+    :hasEventType :재직 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '조만식' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '오산학교' 항목"@ko  .
+
+:조만식참여삼일운동_01 rdf:type :Event ;
+    :hasObject :조만식 ;
+    :hasPostObject :삼일운동 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '조만식' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '삼일운동' 항목"@ko  .
+
+:조만식설립조선물산장려회_01 rdf:type :Event ;
+    :hasObject :조만식 ;
+    :hasPostObject :조선물산장려회 ;
+    :hasEventType :설립 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1920-01-01"^^xsd:dateTime ;
+    :hasBibo "한국민족문화대백과사전, '조만식' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '조선물산장려회' 항목"@ko  .
+
+:조만식참여물산장려운동_01 rdf:type :Event ;
+    :hasObject :조만식 ;
+    :hasPostObject :물산장려운동 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '조만식' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '물산장려운동' 항목"@ko  .
+
+:조만식소속신간회_01 rdf:type :Event ;
+    :hasObject :조만식 ;
+    :hasPostObject :신간회 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '조만식' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '신간회' 항목"@ko  .
+
+:유영모재직오산학교_01 rdf:type :Event ;
+    :hasObject :유영모 ;
+    :hasPostObject :오산학교 ;
+    :hasEventType :재직 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '유영모' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '오산학교' 항목"@ko  .
+
+:함석헌졸업오산학교_01 rdf:type :Event ;
+    :hasObject :함석헌 ;
+    :hasPostObject :오산학교 ;
+    :hasEventType :졸업 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '함석헌' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '오산학교' 항목"@ko  .
+
+:함석헌사사유영모_01 rdf:type :Event ;
+    :hasObject :함석헌 ;
+    :hasPostObject :유영모 ;
+    :hasEventType :사사 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '함석헌' 항목"@ko ;
+    :hasBibo "위키백과, '유영모' 항목"@ko  .
+
+:양기탁소속신민회_01 rdf:type :Event ;
+    :hasObject :양기탁 ;
+    :hasPostObject :신민회 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '양기탁' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '신민회' 항목"@ko  .
+
+:안명근참여안악사건_01 rdf:type :Event ;
+    :hasObject :안명근 ;
+    :hasPostObject :안악사건 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "우리역사넷, '안명근' 항목"@ko ;
+    :hasBibo "우리역사넷, '안악사건' 항목"@ko  .
+
+:홍범도설립대한독립군_01 rdf:type :Event ;
+    :hasObject :홍범도 ;
+    :hasPostObject :대한독립군 ;
+    :hasEventType :설립 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1919-01-01"^^xsd:dateTime ;
+    :hasBibo "한국민족문화대백과사전, '홍범도' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '대한독립군' 항목"@ko  .
+
+:홍범도참여봉오동전투_01 rdf:type :Event ;
+    :hasObject :홍범도 ;
+    :hasPostObject :봉오동전투 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '홍범도' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '봉오동전투' 항목"@ko  .
+
+:홍범도참여청산리전투_01 rdf:type :Event ;
+    :hasObject :홍범도 ;
+    :hasPostObject :청산리전투 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '홍범도' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '청산리전투' 항목"@ko  .
+
+:배위량설립숭실학교_01 rdf:type :Event ;
+    :hasObject :배위량 ;
+    :hasPostObject :숭실학교 ;
+    :hasEventType :설립 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1897-01-01"^^xsd:dateTime ;
+    :hasBibo "위키백과, '배위량' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '숭실학교' 항목"@ko  .
+
+:최광옥졸업숭실학교_01 rdf:type :Event ;
+    :hasObject :최광옥 ;
+    :hasPostObject :숭실학교 ;
+    :hasEventType :졸업 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '최광옥' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '숭실학교' 항목"@ko  .
+
+:최광옥소속신민회_01 rdf:type :Event ;
+    :hasObject :최광옥 ;
+    :hasPostObject :신민회 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '최광옥' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '신민회' 항목"@ko  .
+
+:차이석졸업숭실학교_01 rdf:type :Event ;
+    :hasObject :차이석 ;
+    :hasPostObject :숭실학교 ;
+    :hasEventType :졸업 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '차이석' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '숭실학교' 항목"@ko  .
+
+:차이석소속대한민국임시정부_01 rdf:type :Event ;
+    :hasObject :차이석 ;
+    :hasPostObject :대한민국임시정부 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '차이석' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '대한민국임시정부' 항목"@ko  .
+
+:이용익설립보성학교_01 rdf:type :Event ;
+    :hasObject :이용익 ;
+    :hasPostObject :보성학교 ;
+    :hasEventType :설립 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1905-01-01"^^xsd:dateTime ;
+    :hasBibo "한국민족문화대백과사전, '이용익' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '보성학교' 항목"@ko  .
+
+:이종호경영보성학교_01 rdf:type :Event ;
+    :hasObject :이종호 ;
+    :hasPostObject :보성학교 ;
+    :hasEventType :경영 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '이종호' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '보성학교' 항목"@ko  .
+
+:이종호소속신민회_01 rdf:type :Event ;
+    :hasObject :이종호 ;
+    :hasPostObject :신민회 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '이종호' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '신민회' 항목"@ko  .
+
+:손병희소속천도교_01 rdf:type :Event ;
+    :hasObject :손병희 ;
+    :hasPostObject :천도교 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점). [v4] '천도교' 항목 출처는 이번 확장 작업에서 개별 재검색·재확인을 거치지 않고 기존 매핑표를 그대로 가져온 것으로, 다른 항목과 동일한 신뢰수준으로 취급하지 말 것 - 재검증 권장."@ko ;
+    :hasBibo "한국민족문화대백과사전, '손병희' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '천도교' 항목"@ko  .
+
+:손병희참여삼일운동_01 rdf:type :Event ;
+    :hasObject :손병희 ;
+    :hasPostObject :삼일운동 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '손병희' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '삼일운동' 항목"@ko  .
+
+:이회영설립신흥무관학교_01 rdf:type :Event ;
+    :hasObject :이회영 ;
+    :hasPostObject :신흥무관학교 ;
+    :hasEventType :설립 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1911-01-01"^^xsd:dateTime ;
+    :hasBibo "위키백과, '이회영' 항목"@ko ;
+    :hasBibo "우리역사넷, '신흥무관학교' 항목"@ko  .
+
+:이회영소속신민회_01 rdf:type :Event ;
+    :hasObject :이회영 ;
+    :hasPostObject :신민회 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '이회영' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '신민회' 항목"@ko  .
+
+:이시영설립신흥무관학교_01 rdf:type :Event ;
+    :hasObject :이시영 ;
+    :hasPostObject :신흥무관학교 ;
+    :hasEventType :설립 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1911-01-01"^^xsd:dateTime ;
+    :hasBibo "한국민족문화대백과사전, '이시영' 항목"@ko ;
+    :hasBibo "우리역사넷, '신흥무관학교' 항목"@ko  .
+
+:이시영소속신민회_01 rdf:type :Event ;
+    :hasObject :이시영 ;
+    :hasPostObject :신민회 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이시영' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '신민회' 항목"@ko  .
+
+:이시영소속대한민국임시정부_01 rdf:type :Event ;
+    :hasObject :이시영 ;
+    :hasPostObject :대한민국임시정부 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이시영' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '대한민국임시정부' 항목"@ko  .
+
+:이동녕설립신흥무관학교_01 rdf:type :Event ;
+    :hasObject :이동녕 ;
+    :hasPostObject :신흥무관학교 ;
+    :hasEventType :설립 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1911-01-01"^^xsd:dateTime ;
+    :hasBibo "한국민족문화대백과사전, '이동녕' 항목"@ko ;
+    :hasBibo "우리역사넷, '신흥무관학교' 항목"@ko  .
+
+:이동녕소속대한민국임시정부_01 rdf:type :Event ;
+    :hasObject :이동녕 ;
+    :hasPostObject :대한민국임시정부 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이동녕' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '대한민국임시정부' 항목"@ko  .
+
+:이상룡설립신흥무관학교_01 rdf:type :Event ;
+    :hasObject :이상룡 ;
+    :hasPostObject :신흥무관학교 ;
+    :hasEventType :설립 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1911-01-01"^^xsd:dateTime ;
+    :hasBibo "한국민족문화대백과사전, '이상룡' 항목"@ko ;
+    :hasBibo "우리역사넷, '신흥무관학교' 항목"@ko  .
+
+:이상룡영향양기탁_01 rdf:type :Event ;
+    :hasObject :이상룡 ;
+    :hasPostObject :양기탁 ;
+    :hasEventType :영향 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이상룡' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '양기탁' 항목"@ko  .
+
+:지청천재직신흥무관학교_01 rdf:type :Event ;
+    :hasObject :지청천 ;
+    :hasPostObject :신흥무관학교 ;
+    :hasEventType :재직 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '지청천' 항목"@ko ;
+    :hasBibo "우리역사넷, '신흥무관학교' 항목"@ko  .
+
+:이종일경영보성학교_01 rdf:type :Event ;
+    :hasObject :이종일 ;
+    :hasPostObject :보성학교 ;
+    :hasEventType :경영 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이종일' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '보성학교' 항목"@ko  .
+
+:이종일참여삼일운동_01 rdf:type :Event ;
+    :hasObject :이종일 ;
+    :hasPostObject :삼일운동 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이종일' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '삼일운동' 항목"@ko  .
+
+:한용운참여삼일운동_01 rdf:type :Event ;
+    :hasObject :한용운 ;
+    :hasPostObject :삼일운동 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '한용운' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '삼일운동' 항목"@ko  .
+
+:오세창소속천도교_01 rdf:type :Event ;
+    :hasObject :오세창 ;
+    :hasPostObject :천도교 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점). [v4] '천도교' 항목 출처는 이번 확장 작업에서 개별 재검색·재확인을 거치지 않고 기존 매핑표를 그대로 가져온 것으로, 다른 항목과 동일한 신뢰수준으로 취급하지 말 것 - 재검증 권장."@ko ;
+    :hasBibo "한국민족문화대백과사전, '오세창' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '천도교' 항목"@ko  .
+
+:오세창참여삼일운동_01 rdf:type :Event ;
+    :hasObject :오세창 ;
+    :hasPostObject :삼일운동 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '오세창' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '삼일운동' 항목"@ko  .
+
+:김좌진소속신민회_01 rdf:type :Event ;
+    :hasObject :김좌진 ;
+    :hasPostObject :신민회 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '김좌진' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '신민회' 항목"@ko  .
+
+:김좌진설립북로군정서_01 rdf:type :Event ;
+    :hasObject :김좌진 ;
+    :hasPostObject :북로군정서 ;
+    :hasEventType :설립 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1919-01-01"^^xsd:dateTime ;
+    :hasBibo "위키백과, '김좌진' 항목"@ko ;
+    :hasBibo "위키백과, '북로군정서' 항목"@ko  .
+
+:김좌진참여청산리전투_01 rdf:type :Event ;
+    :hasObject :김좌진 ;
+    :hasPostObject :청산리전투 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '김좌진' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '청산리전투' 항목"@ko  .
+
+:서일설립북로군정서_01 rdf:type :Event ;
+    :hasObject :서일 ;
+    :hasPostObject :북로군정서 ;
+    :hasEventType :설립 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    :hasTimeValue "1919-01-01"^^xsd:dateTime ;
+    :hasBibo "위키백과, '서일' 항목"@ko ;
+    :hasBibo "위키백과, '북로군정서' 항목"@ko  .
+
+:이범석재직신흥무관학교_01 rdf:type :Event ;
+    :hasObject :이범석 ;
+    :hasPostObject :신흥무관학교 ;
+    :hasEventType :재직 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '이범석' 항목"@ko ;
+    :hasBibo "우리역사넷, '신흥무관학교' 항목"@ko  .
+
+:이범석소속북로군정서_01 rdf:type :Event ;
+    :hasObject :이범석 ;
+    :hasPostObject :북로군정서 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '이범석' 항목"@ko ;
+    :hasBibo "위키백과, '북로군정서' 항목"@ko  .
+
+:이범석참여청산리전투_01 rdf:type :Event ;
+    :hasObject :이범석 ;
+    :hasPostObject :청산리전투 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "위키백과, '이범석' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '청산리전투' 항목"@ko  .
+
+:이승만소속대한민국임시정부_01 rdf:type :Event ;
+    :hasObject :이승만 ;
+    :hasPostObject :대한민국임시정부 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이승만' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '대한민국임시정부' 항목"@ko  .
+
+:이동휘소속대한민국임시정부_01 rdf:type :Event ;
+    :hasObject :이동휘 ;
+    :hasPostObject :대한민국임시정부 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '이동휘' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '대한민국임시정부' 항목"@ko  .
+
+:최린소속천도교_01 rdf:type :Event ;
+    :hasObject :최린 ;
+    :hasPostObject :천도교 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점). [v4] '천도교' 항목 출처는 이번 확장 작업에서 개별 재검색·재확인을 거치지 않고 기존 매핑표를 그대로 가져온 것으로, 다른 항목과 동일한 신뢰수준으로 취급하지 말 것 - 재검증 권장."@ko ;
+    :hasBibo "한국민족문화대백과사전, '최린' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '천도교' 항목"@ko  .
+
+:최린참여삼일운동_01 rdf:type :Event ;
+    :hasObject :최린 ;
+    :hasPostObject :삼일운동 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '최린' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '삼일운동' 항목"@ko  .
+
+:정춘수참여삼일운동_01 rdf:type :Event ;
+    :hasObject :정춘수 ;
+    :hasPostObject :삼일운동 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "한국민족문화대백과사전, '정춘수' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '삼일운동' 항목"@ko  .
+
+:박희도졸업숭실학교_01 rdf:type :Event ;
+    :hasObject :박희도 ;
+    :hasPostObject :숭실학교 ;
+    :hasEventType :졸업 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "친일인명사전, '박희도' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '숭실학교' 항목"@ko  .
+
+:박희도참여삼일운동_01 rdf:type :Event ;
+    :hasObject :박희도 ;
+    :hasPostObject :삼일운동 ;
+    :hasEventType :참여 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "친일인명사전, '박희도' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '삼일운동' 항목"@ko  .
+
+:박희도소속신간회_01 rdf:type :Event ;
+    :hasObject :박희도 ;
+    :hasPostObject :신간회 ;
+    :hasEventType :소속 ;
+    :hasCompiler :iteratorfor42 ;
+    :hascompiledTime "2026-08-19T00:00:00+09:00"^^xsd:dateTime ;
+    rdfs:comment "시간정보 미상 - 후속 조사로 hasTimeValue 및 추정모델 보강 필요 (미완성 지점)"@ko ;
+    :hasBibo "친일인명사전, '박희도' 항목"@ko ;
+    :hasBibo "한국민족문화대백과사전, '신간회' 항목"@ko  .
