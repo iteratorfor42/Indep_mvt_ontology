@@ -1,0 +1,1149 @@
+@prefix : <https://ontology.gwanhak-inmul.kr/> .
+@prefix ent: <https://ontology.gwanhak-inmul.kr/entity/> .
+@prefix claim: <https://ontology.gwanhak-inmul.kr/claim/> .
+@prefix src: <https://ontology.gwanhak-inmul.kr/source/> .
+@prefix evd: <https://ontology.gwanhak-inmul.kr/evidence/> .
+@prefix item: <https://ontology.gwanhak-inmul.kr/item/> .
+@prefix vocab: <https://ontology.gwanhak-inmul.kr/vocab/> .
+@prefix prov: <https://ontology.gwanhak-inmul.kr/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+#################################################################
+# Refactor (2026-09-08 v1): 가독성 개선 및 변수명 정리
+#
+# v9.5 TTL — claim_core.csv(34) + claim_hold.csv(5) = 39 Claim 반영
+# exclusion_manifest.csv(16, disposition=excluded_from_ttl)는 TTL 미반영.
+#
+# v9.4 대비 이번 수정 (date_status 완전 정합화, P1):
+#   date_value가 빈 15건의 date_status가 공란으로 남아 있던 것을
+#   Claim의 실제 성격에 따라 두 갈래로 나눠 채움 
+#    — 일괄(blanket) 규칙을 쓰지 않고 각각 개별 판단함:
+#     (a) not_applicable (9건) : 정의/성격 서술(CLM-006/022a/022b)이거나,
+#         Rule G-02에 따라 개인 참여일을 사건일에서 의도적으로 분리한 참여 Claim
+#         예> (CLM-027-04, CLM-017/020/021/024/025)
+#     (b) not_directly_verified (6건) : 설립/재직/소속처럼 
+#         실제로는 특정 시점이 존재하는 사건이지만 
+#         그 날짜를 아직 직접 확인하지 못한 경우
+#         예> (CLM-002/011, CLM-013, CLM-016/018/019)
+#   그 결과 date_status 빈 값이 0건이 되어 완전 정합화됨.
+#   최종 분포: verified 18 / not_directly_verified 11 / not_applicable 10
+#################################################################
+
+prov:Claim a owl:Class .
+prov:Source a owl:Class .
+prov:Evidence a owl:Class .
+prov:Item a owl:Class .
+prov:hasSubject a owl:ObjectProperty . prov:hasObject a owl:ObjectProperty .
+prov:hasRelation a owl:DatatypeProperty . prov:claimText a owl:DatatypeProperty .
+prov:dateValue a owl:DatatypeProperty . prov:datePrecision a owl:DatatypeProperty .
+prov:dateValueStatus a owl:DatatypeProperty .
+prov:hasEstimation a owl:DatatypeProperty ; rdfs:range xsd:boolean .
+prov:hasClaimStatus a owl:DatatypeProperty . prov:hasDateStatus a owl:DatatypeProperty .
+prov:hasVerificationStatus a owl:DatatypeProperty . prov:hasReviewFlag a owl:DatatypeProperty .
+prov:claimDecision a owl:DatatypeProperty ;
+    rdfs:comment "v9.3~v9.5 판정 결과: core(유지/수정, 본류 포함) 또는 hold(보류, 관계/해석 추가검증 필요). review_flag(문제유형)와는 독립적인 속성이다."@ko .
+prov:hasSource a owl:ObjectProperty . prov:hasEvidence a owl:ObjectProperty .
+prov:sourceTitle a owl:DatatypeProperty .
+prov:sourceUrl a owl:DatatypeProperty ; rdfs:range xsd:anyURI .
+prov:evidenceNote a owl:DatatypeProperty . prov:changeHistory a owl:DatatypeProperty .
+prov:verificationDate a owl:DatatypeProperty ; rdfs:range xsd:date .
+prov:belongsToItem a owl:ObjectProperty .
+prov:groupsClaim a owl:ObjectProperty ; owl:inverseOf prov:belongsToItem .
+prov:itemNo a owl:DatatypeProperty ; rdfs:range xsd:integer .
+prov:itemName a owl:DatatypeProperty .
+
+vocab:not_applicable a vocab:DateStatus ;
+    rdfs:comment "이 Claim에는 날짜 assertion 자체가 없음: (1) 정의/성격 서술이라 원래 날짜 개념이 없거나, (2) 사건 참여 Claim에서 개인 참여일을 사건일로부터 의도적으로 분리한 경우(Rule G-02). '날짜가 있을 법한데 못 찾음'을 뜻하는 vocab:not_directly_verified와 혼동 금지."@ko .
+
+# ---- Source ----
+
+src:SRC-101 a prov:Source ;
+    prov:sourceTitle "오산고등학교" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0038302"^^xsd:anyURI .
+
+src:SRC-002 a prov:Source ;
+    prov:sourceTitle "대성학교" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0014519"^^xsd:anyURI .
+
+src:SRC-115 a prov:Source ;
+    prov:sourceTitle "독립군 아내들의 헌신" ;
+    prov:sourceUrl "https://contents.history.go.kr/front/hm/view.do?levelId=hm_126_0050"^^xsd:anyURI .
+
+src:SRC-001 a prov:Source ;
+    prov:sourceTitle "신민회" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0032974"^^xsd:anyURI .
+
+src:SRC-112 a prov:Source ;
+    prov:sourceTitle "북로군정서" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0024657"^^xsd:anyURI .
+
+src:SRC-004 a prov:Source ;
+    prov:sourceTitle "대한민국 임시정부" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0015017"^^xsd:anyURI .
+
+src:SRC-103 a prov:Source ;
+    prov:sourceTitle "조선물산장려회" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0052021"^^xsd:anyURI .
+
+src:SRC-108 a prov:Source ;
+    prov:sourceTitle "보성사" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0023417"^^xsd:anyURI .
+
+src:SRC-006 a prov:Source ;
+    prov:sourceTitle "3·1운동" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0026772"^^xsd:anyURI .
+
+src:SRC-007 a prov:Source ;
+    prov:sourceTitle "안악사건" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0034866"^^xsd:anyURI .
+
+src:SRC-008 a prov:Source ;
+    prov:sourceTitle "105인 사건" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0022233"^^xsd:anyURI .
+
+src:SRC-107 a prov:Source ;
+    prov:sourceTitle "봉오동전투" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0023974"^^xsd:anyURI .
+
+src:SRC-010 a prov:Source ;
+    prov:sourceTitle "조선물산장려운동" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0052020"^^xsd:anyURI .
+
+src:SRC-011 a prov:Source ;
+    prov:sourceTitle "안창호" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0035050"^^xsd:anyURI .
+
+src:SRC-012 a prov:Source ;
+    prov:sourceTitle "조만식" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0051729"^^xsd:anyURI .
+
+src:SRC-013 a prov:Source ;
+    prov:sourceTitle "유영모" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0041674"^^xsd:anyURI .
+
+src:SRC-014 a prov:Source ;
+    prov:sourceTitle "안명근" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0034719"^^xsd:anyURI .
+
+src:SRC-106 a prov:Source ;
+    prov:sourceTitle "홍범도" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0064093"^^xsd:anyURI .
+
+src:SRC-016 a prov:Source ;
+    prov:sourceTitle "이종호" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0045955"^^xsd:anyURI .
+
+src:SRC-017 a prov:Source ;
+    prov:sourceTitle "손병희" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0030507"^^xsd:anyURI .
+
+src:SRC-018 a prov:Source ;
+    prov:sourceTitle "이회영" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0046635"^^xsd:anyURI .
+
+src:SRC-019 a prov:Source ;
+    prov:sourceTitle "이시영" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0044990"^^xsd:anyURI .
+
+src:SRC-109 a prov:Source ;
+    prov:sourceTitle "이종일" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0045940"^^xsd:anyURI .
+
+src:SRC-111 a prov:Source ;
+    prov:sourceTitle "김좌진" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0010528"^^xsd:anyURI .
+
+src:SRC-113 a prov:Source ;
+    prov:sourceTitle "대한민국 임시정부 헌법" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0015021"^^xsd:anyURI .
+
+src:SRC-024 a prov:Source ;
+    prov:sourceTitle "최린" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0057276"^^xsd:anyURI .
+
+src:SRC-114 a prov:Source ;
+    prov:sourceTitle "신흥무관학교(용어해설)" ;
+    prov:sourceUrl "https://contents.history.go.kr/front/tg/list.do?ganada=전체&pageIndex=3&pageUnit=20&treeId=0202"^^xsd:anyURI .
+
+src:SRC-102 a prov:Source ;
+    prov:sourceTitle "이승훈" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0044964"^^xsd:anyURI .
+
+src:SRC-104 a prov:Source ;
+    prov:sourceTitle "고려공산당" ;
+    prov:sourceUrl "https://encykorea.aks.ac.kr/Article/E0003430"^^xsd:anyURI .
+
+src:SRC-105 a prov:Source ;
+    prov:sourceTitle "대한민국임시정부자료집(한국 근대 사료 DB)" ;
+    prov:sourceUrl "https://db.history.go.kr/modern/level.do?levelId=ij_045_0020_00010_0090"^^xsd:anyURI .
+
+# ---- Evidence ----
+
+evd:EVD-101 a prov:Evidence ;
+    prov:evidenceNote "1907년 12월 이승훈이 오산학교를 설립" .
+
+evd:EVD-002 a prov:Evidence .
+
+evd:EVD-115 a prov:Evidence ;
+    prov:evidenceNote "1911년 4월 이회영·이시영 형제와 이동녕·이상룡 등이 삼원보에 기지를 마련하고 신흥강습소를 설립" .
+
+evd:EVD-001 a prov:Evidence .
+
+evd:EVD-112 a prov:Evidence ;
+    prov:evidenceNote "서일·김좌진 등이 주도한 독립군 조직" .
+
+evd:EVD-004 a prov:Evidence .
+
+evd:EVD-103 a prov:Evidence ;
+    prov:evidenceNote "조만식·오윤선·김동원·김보애 등 70인이 발기·조직" .
+
+evd:EVD-108 a prov:Evidence ;
+    prov:evidenceNote "사장 이종일; 독립선언서를 인쇄" .
+
+evd:EVD-006 a prov:Evidence .
+
+evd:EVD-007 a prov:Evidence ;
+    prov:evidenceNote "안명근이 서간도 무관학교 설립자금을 모집하다가 관련자들과 검거된 사건, 1910년 11월" .
+
+evd:EVD-008 a prov:Evidence .
+
+evd:EVD-107 a prov:Evidence ;
+    prov:evidenceNote "1920년 만주 봉오동에서 독립군이 일본군을 대패시킨 전투" .
+
+evd:EVD-010 a prov:Evidence ;
+    prov:evidenceNote "조선물산장려회와는 별개 항목" .
+
+evd:EVD-011 a prov:Evidence .
+
+evd:EVD-012 a prov:Evidence .
+
+evd:EVD-013 a prov:Evidence .
+
+evd:EVD-014 a prov:Evidence .
+
+evd:EVD-106 a prov:Evidence .
+
+evd:EVD-016 a prov:Evidence .
+
+evd:EVD-017 a prov:Evidence .
+
+evd:EVD-018 a prov:Evidence .
+
+evd:EVD-019 a prov:Evidence .
+
+evd:EVD-109 a prov:Evidence ;
+    prov:evidenceNote "우리역사넷 사료에서도 동일 사실 교차확인" .
+
+evd:EVD-111 a prov:Evidence ;
+    prov:evidenceNote "신민회에 가입하였고 청년학우회에서도 활동" .
+
+evd:EVD-113 a prov:Evidence ;
+    prov:evidenceNote "대한민국임시정부 헌법의 국무원 구성 관련 근거; source/evidence를 헌법 항목에 맞게 정정" .
+
+evd:EVD-024 a prov:Evidence .
+
+evd:EVD-114 a prov:Evidence ;
+    prov:evidenceNote "개칭 사실은 확인되나 정확한 개칭 시점은 불확실" .
+
+evd:EVD-103b a prov:Evidence ;
+    prov:evidenceNote "서울 지역 물산장려운동의 별도 조직 과정을 서술" .
+
+evd:EVD-102 a prov:Evidence ;
+    prov:evidenceNote "1907년 11월 24일 오산학교를 개교; 설립 Claim과 동일 사건 여부 미확인" .
+
+evd:EVD-104 a prov:Evidence ;
+    prov:evidenceNote "1919년 8월 말 상해 도착, 임시정부 초대 국무총리 취임" .
+
+evd:EVD-105 a prov:Evidence ;
+    prov:evidenceNote "1919년 11월 3일 국무총리 이동휘 등의 합동 취임식; CLM-LEE-A와 동일 단계 사건인지 미확인" .
+
+# ---- Item ----
+
+item:item-1 a prov:Item ;
+    prov:itemNo 1 ;
+    prov:itemName "오산학교" ;
+    prov:groupsClaim claim:CLM-OSAN-01 .
+
+item:item-2 a prov:Item ;
+    prov:itemNo 2 ;
+    prov:itemName "대성학교" ;
+    prov:groupsClaim claim:CLM-002 .
+
+item:item-5 a prov:Item ;
+    prov:itemNo 5 ;
+    prov:itemName "신흥무관학교" ;
+    prov:groupsClaim claim:CLM-047 .
+
+item:item-6 a prov:Item ;
+    prov:itemNo 6 ;
+    prov:itemName "신흥강습소" ;
+    prov:groupsClaim claim:CLM-003 .
+
+item:item-7 a prov:Item ;
+    prov:itemNo 7 ;
+    prov:itemName "신민회" ;
+    prov:groupsClaim claim:CLM-001 .
+
+item:item-9 a prov:Item ;
+    prov:itemNo 9 ;
+    prov:itemName "북로군정서" ;
+    prov:groupsClaim claim:CLM-022b .
+
+item:item-10 a prov:Item ;
+    prov:itemNo 10 ;
+    prov:itemName "대한민국임시정부" ;
+    prov:groupsClaim claim:CLM-004 .
+
+item:item-11 a prov:Item ;
+    prov:itemNo 11 ;
+    prov:itemName "조선물산장려회" ;
+    prov:groupsClaim claim:CLM-JOSEON-01, claim:CLM-JOSEON-03 .
+
+item:item-13 a prov:Item ;
+    prov:itemNo 13 ;
+    prov:itemName "보성사" ;
+    prov:groupsClaim claim:CLM-039-01 .
+
+item:item-14 a prov:Item ;
+    prov:itemNo 14 ;
+    prov:itemName "3·1운동" ;
+    prov:groupsClaim claim:CLM-006, claim:CLM-006-DATE .
+
+item:item-15 a prov:Item ;
+    prov:itemNo 15 ;
+    prov:itemName "안악사건" ;
+    prov:groupsClaim claim:CLM-007 .
+
+item:item-16 a prov:Item ;
+    prov:itemNo 16 ;
+    prov:itemName "105인사건" ;
+    prov:groupsClaim claim:CLM-008 .
+
+item:item-17 a prov:Item ;
+    prov:itemNo 17 ;
+    prov:itemName "봉오동전투" ;
+    prov:groupsClaim claim:CLM-EVENT-017 .
+
+item:item-19 a prov:Item ;
+    prov:itemNo 19 ;
+    prov:itemName "물산장려운동" ;
+    prov:groupsClaim claim:CLM-010 .
+
+item:item-20 a prov:Item ;
+    prov:itemNo 20 ;
+    prov:itemName "이승훈" ;
+    prov:groupsClaim claim:CLM-OSAN-02 .
+
+item:item-21 a prov:Item ;
+    prov:itemNo 21 ;
+    prov:itemName "안창호" ;
+    prov:groupsClaim claim:CLM-011 .
+
+item:item-22 a prov:Item ;
+    prov:itemNo 22 ;
+    prov:itemName "조만식" ;
+    prov:groupsClaim claim:CLM-012 .
+
+item:item-23 a prov:Item ;
+    prov:itemNo 23 ;
+    prov:itemName "유영모" ;
+    prov:groupsClaim claim:CLM-013 .
+
+item:item-25 a prov:Item ;
+    prov:itemNo 25 ;
+    prov:itemName "양기탁" ;
+    prov:groupsClaim claim:CLM-046 .
+
+item:item-26 a prov:Item ;
+    prov:itemNo 26 ;
+    prov:itemName "안명근" ;
+    prov:groupsClaim claim:CLM-014 .
+
+item:item-27 a prov:Item ;
+    prov:itemNo 27 ;
+    prov:itemName "홍범도" ;
+    prov:groupsClaim claim:CLM-027-04 .
+
+item:item-29 a prov:Item ;
+    prov:itemNo 29 ;
+    prov:itemName "최광옥" ;
+    prov:groupsClaim claim:CLM-035 .
+
+item:item-32 a prov:Item ;
+    prov:itemNo 32 ;
+    prov:itemName "이종호" ;
+    prov:groupsClaim claim:CLM-016 .
+
+item:item-33 a prov:Item ;
+    prov:itemNo 33 ;
+    prov:itemName "손병희" ;
+    prov:groupsClaim claim:CLM-017 .
+
+item:item-34 a prov:Item ;
+    prov:itemNo 34 ;
+    prov:itemName "이회영" ;
+    prov:groupsClaim claim:CLM-018 .
+
+item:item-35 a prov:Item ;
+    prov:itemNo 35 ;
+    prov:itemName "이시영" ;
+    prov:groupsClaim claim:CLM-019 .
+
+item:item-39 a prov:Item ;
+    prov:itemNo 39 ;
+    prov:itemName "이종일" ;
+    prov:groupsClaim claim:CLM-039-02 .
+
+item:item-40 a prov:Item ;
+    prov:itemNo 40 ;
+    prov:itemName "한용운" ;
+    prov:groupsClaim claim:CLM-020 .
+
+item:item-41 a prov:Item ;
+    prov:itemNo 41 ;
+    prov:itemName "오세창" ;
+    prov:groupsClaim claim:CLM-021 .
+
+item:item-42 a prov:Item ;
+    prov:itemNo 42 ;
+    prov:itemName "김좌진" ;
+    prov:groupsClaim claim:CLM-KIM-01, claim:CLM-KIM-02 .
+
+item:item-43 a prov:Item ;
+    prov:itemNo 43 ;
+    prov:itemName "서일" ;
+    prov:groupsClaim claim:CLM-022a .
+
+item:item-45 a prov:Item ;
+    prov:itemNo 45 ;
+    prov:itemName "이승만" ;
+    prov:groupsClaim claim:CLM-023 .
+
+item:item-46 a prov:Item ;
+    prov:itemNo 46 ;
+    prov:itemName "이동휘" ;
+    prov:groupsClaim claim:CLM-LEE-A, claim:CLM-LEE-B .
+
+item:item-47 a prov:Item ;
+    prov:itemNo 47 ;
+    prov:itemName "최린" ;
+    prov:groupsClaim claim:CLM-024 .
+
+item:item-48 a prov:Item ;
+    prov:itemNo 48 ;
+    prov:itemName "정춘수" ;
+    prov:groupsClaim claim:CLM-025 .
+
+# ---- Claim (Core 34 + Hold 5 = 39) ----
+
+claim:CLM-OSAN-01 a prov:Claim ;
+    prov:belongsToItem item:item-1 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:이승훈 ;
+    prov:hasObject ent:오산학교 ;
+    prov:hasRelation "설립" ;
+    prov:claimText "이승훈이 오산학교를 설립하였다."@ko ;
+    prov:dateValue "1907-12"^^xsd:gYearMonth ;
+    prov:datePrecision vocab:Month ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-101 ;
+    prov:hasEvidence evd:EVD-101 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — review_flag=relationship_issue가 있으나 claim_status=confirmed는 그대로 근거가 충분함을 의미하므로 Core에 유지(review_flag와 claim_status는 독립축, Rule G-05). CLM-OSAN-02(개교)만 보류로 분리" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-002 a prov:Claim ;
+    prov:belongsToItem item:item-2 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:안창호 ;
+    prov:hasObject ent:대성학교 ;
+    prov:hasRelation "설립" ;
+    prov:claimText "안창호가 평양에 대성학교를 설립하였다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_directly_verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-002 ;
+    prov:hasEvidence evd:EVD-002 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; retained with direct source/evidence | v9.3: 유지 — 대성학교 설립 관련 중복 가능 Claim(CLM-002/CLM-011)으로 식별됨. 지금 병합하면 개별 Evidence를 잃으므로, 두 Claim과 Evidence를 각각 보존한 채 '동일 Claim+복수 Evidence' 통합 여부는 후속 provenance 정리 과제로 유보 | v9.5: date_status 공란→not_directly_verified 정합화. 대성학교 설립은 특정 시점에 일어난 사건이나, 정확한 날짜를 직접 확인하지 못함" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-003 a prov:Claim ;
+    prov:belongsToItem item:item-6 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:이회영 ;
+    prov:hasObject ent:신흥강습소 ;
+    prov:hasRelation "설립" ;
+    prov:claimText "이회영 등이 신흥강습소를 설립하였다."@ko ;
+    prov:dateValue "1911-04"^^xsd:gYearMonth ;
+    prov:datePrecision vocab:Month ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-115 ;
+    prov:hasEvidence evd:EVD-115 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.4: claim 문장을 subject_uri(:이회영)→relation(설립)→object_uri(:신흥강습소) 방향에 맞춰 능동태로 수정. 실제 공동설립자(이회영·이시영·이동녕·이상룡) 전원을 주어에 넣으면 다중 주체 문제가 생기므로 '등'으로 대표 표기, 개별 인물의 별도 공동설립 Claim은 후속 확장 대상" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-001 a prov:Claim ;
+    prov:belongsToItem item:item-7 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:신민회 ;
+    prov:hasRelation "조직" ;
+    prov:claimText "신민회는 1907년 서울에서 조직된 비밀결사이다."@ko ;
+    prov:dateValue "1907"^^xsd:gYear ;
+    prov:datePrecision vocab:Year ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-001 ;
+    prov:hasEvidence evd:EVD-001 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-022b a prov:Claim ;
+    prov:belongsToItem item:item-9 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:북로군정서 ;
+    prov:hasObject ent:김좌진 ;
+    prov:hasRelation "조직관계" ;
+    prov:claimText "북로군정서는 김좌진이 주도한 독립군 조직이다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_applicable ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-112 ;
+    prov:hasEvidence evd:EVD-112 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; split from combined draft row | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.4: claim 문장에서 '서일·'을 제거해 object_uri(:김좌진) 단독과 일치시킴. 서일과 북로군정서의 관계는 별도 Claim CLM-022a(item 43)가 이미 담당하므로 정보 손실 없음. Claim 수를 늘리지 않는 방안(A) 채택 | v9.5: date_status 공란→not_applicable 정합화. 북로군정서를 '주도한 조직'이라는 조직 성격 서술, 특정 시점의 사건이 아님" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-004 a prov:Claim ;
+    prov:belongsToItem item:item-10 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:대한민국임시정부 ;
+    prov:hasRelation "수립" ;
+    prov:claimText "대한민국임시정부가 1919년 수립되었다."@ko ;
+    prov:dateValue "1919"^^xsd:gYear ;
+    prov:datePrecision vocab:Year ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-004 ;
+    prov:hasEvidence evd:EVD-004 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-JOSEON-01 a prov:Claim ;
+    prov:belongsToItem item:item-11 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:조선물산장려회_평양 ;
+    prov:hasObject ent:평양 ;
+    prov:hasRelation "조직" ;
+    prov:claimText "평양의 조선물산장려회는 1920년 8월에 조직되었다."@ko ;
+    prov:dateValue "1920-08"^^xsd:gYearMonth ;
+    prov:datePrecision vocab:Month ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-103 ;
+    prov:hasEvidence evd:EVD-103 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; retained; exact day claim removed | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-039-01 a prov:Claim ;
+    prov:belongsToItem item:item-13 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:이종일 ;
+    prov:hasObject ent:보성사 ;
+    prov:hasRelation "역임" ;
+    prov:claimText "이종일은 1919년 당시 보성사 사장이었다."@ko ;
+    prov:dateValue "1919"^^xsd:gYear ;
+    prov:datePrecision vocab:Year ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-108 ;
+    prov:hasEvidence evd:EVD-108 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-006 a prov:Claim ;
+    prov:belongsToItem item:item-14 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:3.1운동 ;
+    prov:hasRelation "해당" ;
+    prov:claimText "3·1운동은 독립만세운동이다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_applicable ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-006 ;
+    prov:hasEvidence evd:EVD-006 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.2: 컬럼 밀림(shift) 버그 수정 — CLM-006-DATE와 동일 구조로 재정렬 | v9.3: 수정 보류 — relation='해당'이 RDF 관계로는 의미가 약함. Claim 자체는 Core에 유지하되, event classification(예: rdf:type 기반 사건성격 속성)으로 재모델링하는 것을 relation vocabulary 정규화 후속 과제로 남김 | v9.5: date_status 공란→not_applicable 정합화. 3·1운동의 사건 성격을 규정하는 서술(독립만세운동이다)일 뿐, 특정 시점을 주장하지 않음" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-006-DATE a prov:Claim ;
+    prov:belongsToItem item:item-14 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:3.1운동 ;
+    prov:hasRelation "발생" ;
+    prov:claimText "3·1운동은 1919년 3월 1일에 발생하였다."@ko ;
+    prov:dateValue "1919-03-01"^^xsd:date ;
+    prov:datePrecision vocab:Day ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-006 ;
+    prov:hasEvidence evd:EVD-006 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; event date kept as separate Claim | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-007 a prov:Claim ;
+    prov:belongsToItem item:item-15 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:안악사건 ;
+    prov:hasRelation "related_to" ;
+    prov:claimText "안악사건은 일제가 민족운동 세력을 탄압한 사건이다."@ko ;
+    prov:dateValue "1910-11"^^xsd:gYearMonth ;
+    prov:datePrecision vocab:Month ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-007 ;
+    prov:hasEvidence evd:EVD-007 ;
+    prov:changeHistory "v9.2: cleaned/exclusion 양쪽에서 누락되어 있던 item_no 15를 원본 근거(E0034866)로 복원 — 제외 사유가 아니라 취합 누락이었음 | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-008 a prov:Claim ;
+    prov:belongsToItem item:item-16 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:105인사건 ;
+    prov:hasRelation "related_to" ;
+    prov:claimText "105인 사건은 1911년 일제가 민족주의·기독교계 항일세력을 탄압하기 위해 조작한 사건이다."@ko ;
+    prov:dateValue "1911"^^xsd:gYear ;
+    prov:datePrecision vocab:Year ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-008 ;
+    prov:hasEvidence evd:EVD-008 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-EVENT-017 a prov:Claim ;
+    prov:belongsToItem item:item-17 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:봉오동전투 ;
+    prov:hasRelation "발생" ;
+    prov:claimText "봉오동전투는 1920년 6월에 발생하였다."@ko ;
+    prov:dateValue "1920-06"^^xsd:gYearMonth ;
+    prov:datePrecision vocab:Month ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-107 ;
+    prov:hasEvidence evd:EVD-107 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-010 a prov:Claim ;
+    prov:belongsToItem item:item-19 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:조선물산장려운동 ;
+    prov:hasRelation "related_to" ;
+    prov:claimText "조선물산장려운동은 1920년대 초부터 전개된 경제자립운동이다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_applicable ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-010 ;
+    prov:hasEvidence evd:EVD-010 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.2: 비표준 precision(Decade) 재제거 | v9.3: 수정 확인 — 비표준 date_precision(Decade)이 이미 제거된 상태임을 재확인. Claim 자체('조선물산장려운동이 1920년대 초부터 전개되었다')는 Core에 유지하고, 근거 없는 날짜 assertion만 배제한 것이지 Claim을 제외한 것이 아님(Rule G-03) | v9.4: date_status를 verified→not_applicable로 정정 — date_value가 없는데 '검증됨'이라고 한 것은 논리 오류. 신규 vocab 'not_applicable'=날짜 assertion 자체가 이 Claim에 없음. (CLM-046/035/KIM-01/KIM-02/047의 not_directly_verified는 유지 — 이들은 '날짜가 있을 법한데 아직 못 찾음'이라는 다른 의미이므로 오류 아님)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-011 a prov:Claim ;
+    prov:belongsToItem item:item-21 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:안창호 ;
+    prov:hasObject ent:대성학교 ;
+    prov:hasRelation "설립" ;
+    prov:claimText "안창호는 대성학교를 설립하였다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_directly_verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-011 ;
+    prov:hasEvidence evd:EVD-011 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 대성학교 설립 관련 중복 가능 Claim(CLM-002/CLM-011)으로 식별됨. 지금 병합하면 개별 Evidence를 잃으므로, 두 Claim과 Evidence를 각각 보존한 채 '동일 Claim+복수 Evidence' 통합 여부는 후속 provenance 정리 과제로 유보 | v9.5: date_status 공란→not_directly_verified 정합화. 대성학교 설립은 특정 시점에 일어난 사건이나, 정확한 날짜를 직접 확인하지 못함" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-012 a prov:Claim ;
+    prov:belongsToItem item:item-22 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:조만식 ;
+    prov:hasObject ent:조선물산장려회_평양 ;
+    prov:hasRelation "참여" ;
+    prov:claimText "조만식은 1920년 평양 조선물산장려회 조직에 참여하였다."@ko ;
+    prov:dateValue "1920"^^xsd:gYear ;
+    prov:datePrecision vocab:Year ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-012 ;
+    prov:hasEvidence evd:EVD-012 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; normalized object URI to place-specific entity | v9.3: 수정 확인 — object_uri가 이미 :조선물산장려회_평양(평양 지역 엔티티)로 정규화되어 있음을 재확인, 추가 변경 없음" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-013 a prov:Claim ;
+    prov:belongsToItem item:item-23 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:유영모 ;
+    prov:hasObject ent:오산학교 ;
+    prov:hasRelation "재직" ;
+    prov:claimText "유영모는 오산학교에서 재직하였다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_directly_verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-013 ;
+    prov:hasEvidence evd:EVD-013 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.5: date_status 공란→not_directly_verified 정합화. 재직은 시작 시점이 존재하는 사건이나, 정확한 날짜를 직접 확인하지 못함" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-046 a prov:Claim ;
+    prov:belongsToItem item:item-25 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:양기탁 ;
+    prov:hasObject ent:신민회 ;
+    prov:hasRelation "소속" ;
+    prov:claimText "양기탁은 신민회에 소속되어 핵심 인물로 활동하였다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed_indirect ;
+    prov:hasDateStatus vocab:not_directly_verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-001 ;
+    prov:hasEvidence evd:EVD-001 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; 1 Evidence→N Claim retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.4: claim 문장에 '소속되어'를 명시해 relation(소속)과의 의미 간극을 좁힘" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-014 a prov:Claim ;
+    prov:belongsToItem item:item-26 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:안악사건 ;
+    prov:hasObject ent:105인사건 ;
+    prov:hasRelation "related_to" ;
+    prov:claimText "안악사건은 이후 105인 사건으로 이어지는 계기 가운데 하나로 언급된다."@ko ;
+    prov:dateValue "1910-11"^^xsd:gYearMonth ;
+    prov:datePrecision vocab:Month ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-014 ;
+    prov:hasEvidence evd:EVD-014 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.4: subject_uri를 :안명근(인물)에서 :안악사건(사건)으로 정정 — claim 문장의 실제 주어와 일치시킴. object_uri=:105인사건 추가(relation=related_to 대상 명시). item_no/item_name(26/안명근)은 원본 매핑 출처이므로 유지, subject 엔티티와는 의도적으로 다름을 기록" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-027-04 a prov:Claim ;
+    prov:belongsToItem item:item-27 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:홍범도 ;
+    prov:hasObject ent:봉오동전투 ;
+    prov:hasRelation "참여" ;
+    prov:claimText "홍범도는 봉오동전투에서 독립군을 이끌었다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_applicable ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-106 ;
+    prov:hasEvidence evd:EVD-106 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; retained; inferred personal date Claim removed | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.5: date_status 공란→not_applicable 정합화. 참여 사실 자체에는 날짜를 부여하지 않음(Rule G-02, 사건일은 별도 CLM-EVENT-017이 담당)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-035 a prov:Claim ;
+    prov:belongsToItem item:item-29 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:최광옥 ;
+    prov:hasObject ent:신민회 ;
+    prov:hasRelation "소속" ;
+    prov:claimText "최광옥이 신민회에 소속되어 활동하였다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed_indirect ;
+    prov:hasDateStatus vocab:not_directly_verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-001 ;
+    prov:hasEvidence evd:EVD-001 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; retained as indirectly confirmed from membership list | v9.3: 수정 — claim 문장을 relation(소속)과 일치하도록 '최광옥이 신민회 민족운동 활동과 관련되었다.' → '최광옥이 신민회에 소속되어 활동하였다.'으로 정규화" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-016 a prov:Claim ;
+    prov:belongsToItem item:item-32 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:이종호 ;
+    prov:hasObject ent:신민회 ;
+    prov:hasRelation "소속" ;
+    prov:claimText "이종호는 신민회에 소속되어 중심 인물로 활동하였다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_directly_verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-016 ;
+    prov:hasEvidence evd:EVD-016 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.4: claim 문장에 '소속되어'를 명시해 relation(소속)과의 의미 간극을 좁힘 (CLM-046과 동일 패턴 일괄 정규화) | v9.5: date_status 공란→not_directly_verified 정합화. 신민회 소속(가입)은 특정 시점에 일어난 사건이나, 정확한 날짜를 직접 확인하지 못함" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-017 a prov:Claim ;
+    prov:belongsToItem item:item-33 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:손병희 ;
+    prov:hasObject ent:3.1운동 ;
+    prov:hasRelation "참여" ;
+    prov:claimText "손병희는 3·1운동 추진 과정에서 천도교측 주도체의 중심 인물이었다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_applicable ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-017 ;
+    prov:hasEvidence evd:EVD-017 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.5: date_status 공란→not_applicable 정합화. 3·1운동 참여 사실. 개인 참여일을 사건일(1919-03-01)에서 자동상속하지 않음(Rule G-02)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-018 a prov:Claim ;
+    prov:belongsToItem item:item-34 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:이회영 ;
+    prov:hasObject ent:신민회 ;
+    prov:hasRelation "소속" ;
+    prov:claimText "이회영은 신민회에 소속되어 중심 인물로 활동하였다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_directly_verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-018 ;
+    prov:hasEvidence evd:EVD-018 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.4: claim 문장에 '소속되어'를 명시해 relation(소속)과의 의미 간극을 좁힘 (CLM-046과 동일 패턴 일괄 정규화) | v9.5: date_status 공란→not_directly_verified 정합화. 신민회 소속(가입)은 특정 시점에 일어난 사건이나, 정확한 날짜를 직접 확인하지 못함" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-019 a prov:Claim ;
+    prov:belongsToItem item:item-35 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:이시영 ;
+    prov:hasObject ent:신민회 ;
+    prov:hasRelation "소속" ;
+    prov:claimText "이시영은 신민회에 소속되어 중심 인물로 활동하였다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_directly_verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-019 ;
+    prov:hasEvidence evd:EVD-019 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.4: claim 문장에 '소속되어'를 명시해 relation(소속)과의 의미 간극을 좁힘 (CLM-046과 동일 패턴 일괄 정규화) | v9.5: date_status 공란→not_directly_verified 정합화. 신민회 소속(가입)은 특정 시점에 일어난 사건이나, 정확한 날짜를 직접 확인하지 못함" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-039-02 a prov:Claim ;
+    prov:belongsToItem item:item-39 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:이종일 ;
+    prov:hasObject ent:독립선언서 ;
+    prov:hasRelation "인쇄주도" ;
+    prov:claimText "이종일이 1919년 2월 27일 보성사에서 독립선언서 인쇄를 주도하였다."@ko ;
+    prov:dateValue "1919-02-27"^^xsd:date ;
+    prov:datePrecision vocab:Day ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-109 ;
+    prov:hasEvidence evd:EVD-109 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; cross-source corroboration retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-020 a prov:Claim ;
+    prov:belongsToItem item:item-40 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:한용운 ;
+    prov:hasObject ent:3.1운동 ;
+    prov:hasRelation "참여" ;
+    prov:claimText "한용운은 3·1운동에 참여한 민족대표 가운데 한 사람이다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_applicable ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-006 ;
+    prov:hasEvidence evd:EVD-006 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.5: date_status 공란→not_applicable 정합화. 3·1운동 참여 사실. 개인 참여일을 사건일에서 자동상속하지 않음(Rule G-02)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-021 a prov:Claim ;
+    prov:belongsToItem item:item-41 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:오세창 ;
+    prov:hasObject ent:3.1운동 ;
+    prov:hasRelation "참여" ;
+    prov:claimText "오세창은 3·1운동 추진 과정에서 천도교측 주도체의 중심 인물이었다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_applicable ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-006 ;
+    prov:hasEvidence evd:EVD-006 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; cross-reference note retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.5: date_status 공란→not_applicable 정합화. 3·1운동 참여 사실. 개인 참여일을 사건일에서 자동상속하지 않음(Rule G-02)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-KIM-01 a prov:Claim ;
+    prov:belongsToItem item:item-42 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:김좌진 ;
+    prov:hasObject ent:신민회 ;
+    prov:hasRelation "가입" ;
+    prov:claimText "김좌진이 신민회에 가입하였다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_directly_verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-111 ;
+    prov:hasEvidence evd:EVD-111 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; 1 Evidence→N Claim retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-KIM-02 a prov:Claim ;
+    prov:belongsToItem item:item-42 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:김좌진 ;
+    prov:hasObject ent:청년학우회 ;
+    prov:hasRelation "활동" ;
+    prov:claimText "김좌진이 청년학우회에서 활동하였다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_directly_verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-111 ;
+    prov:hasEvidence evd:EVD-111 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; 1 Evidence→N Claim retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-022a a prov:Claim ;
+    prov:belongsToItem item:item-43 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:서일 ;
+    prov:hasObject ent:북로군정서 ;
+    prov:hasRelation "related_to" ;
+    prov:claimText "서일은 북로군정서와 관련된 독립운동가이다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_applicable ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-112 ;
+    prov:hasEvidence evd:EVD-112 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; split from combined draft row | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.5: date_status 공란→not_applicable 정합화. 북로군정서와의 '관련' 성격을 서술할 뿐, 특정 시점의 사건이 아님" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-023 a prov:Claim ;
+    prov:belongsToItem item:item-45 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:이승만 ;
+    prov:hasObject ent:대한민국임시정부 ;
+    prov:hasRelation "related_to" ;
+    prov:claimText "이승만은 대한민국임시정부와 관련된 독립운동가이다."@ko ;
+    prov:dateValue "1919-09-11"^^xsd:date ;
+    prov:datePrecision vocab:Day ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-113 ;
+    prov:hasEvidence evd:EVD-113 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; corrected source/evidence mapping from draft | v9.2: source_id/evidence_id를 SRC-004→SRC-113으로 재정렬(URL 불일치 재발 수정) | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-024 a prov:Claim ;
+    prov:belongsToItem item:item-47 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:최린 ;
+    prov:hasObject ent:3.1운동 ;
+    prov:hasRelation "참여" ;
+    prov:claimText "최린은 3·1운동 추진 과정에서 천도교측 주도체에 합류하였다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_applicable ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-024 ;
+    prov:hasEvidence evd:EVD-024 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.5: date_status 공란→not_applicable 정합화. 3·1운동 참여 사실. 개인 참여일을 사건일에서 자동상속하지 않음(Rule G-02)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-025 a prov:Claim ;
+    prov:belongsToItem item:item-48 ;
+    prov:claimDecision "core" ;
+    prov:hasSubject ent:정춘수 ;
+    prov:hasObject ent:3.1운동 ;
+    prov:hasRelation "참여" ;
+    prov:claimText "정춘수는 3·1운동 민족대표 33인 가운데 한 사람이다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:not_applicable ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:none ;
+    prov:hasSource src:SRC-006 ;
+    prov:hasEvidence evd:EVD-006 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; provenance retained | v9.3: 유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지 | v9.5: date_status 공란→not_applicable 정합화. 3·1운동 참여 사실. 개인 참여일을 사건일에서 자동상속하지 않음(Rule G-02)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-047 a prov:Claim ;
+    prov:belongsToItem item:item-5 ;
+    prov:claimDecision "hold" ;
+    prov:hasSubject ent:신흥강습소 ;
+    prov:hasObject ent:신흥무관학교 ;
+    prov:hasRelation "개칭" ;
+    prov:claimText "신흥강습소는 이후 신흥무관학교로 개칭·발전하였다는 서술이 있으나 정확한 개칭 시점은 출처마다 다르다."@ko ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:validation_hold ;
+    prov:hasDateStatus vocab:not_directly_verified ;
+    prov:hasVerificationStatus vocab:partially_verified ;
+    prov:hasReviewFlag vocab:relationship_issue ;
+    prov:hasSource src:SRC-114 ;
+    prov:hasEvidence evd:EVD-114 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; retained as validation_hold, no date asserted | v9.3: 보류 — review_flag=relationship_issue, 관계/해석에 추가 검증 필요. claim_hold.csv로 이관 (claim_status 값 자체는 변경하지 않음 — 사실 근거와 관계 해석은 독립적으로 평가)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-JOSEON-03 a prov:Claim ;
+    prov:belongsToItem item:item-11 ;
+    prov:claimDecision "hold" ;
+    prov:hasSubject ent:조선물산장려회_서울 ;
+    prov:hasObject ent:서울 ;
+    prov:hasRelation "조직" ;
+    prov:claimText "서울의 조선물산장려회는 1923년에 평양과 별도로 조직되었다."@ko ;
+    prov:dateValue "1923"^^xsd:gYear ;
+    prov:datePrecision vocab:Year ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:relationship_issue ;
+    prov:hasSource src:SRC-103 ;
+    prov:hasEvidence evd:EVD-103b ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; retained with relationship_issue for review | v9.3: 보류 — review_flag=relationship_issue, 관계/해석에 추가 검증 필요. claim_hold.csv로 이관 (claim_status 값 자체는 변경하지 않음 — 사실 근거와 관계 해석은 독립적으로 평가)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-OSAN-02 a prov:Claim ;
+    prov:belongsToItem item:item-20 ;
+    prov:claimDecision "hold" ;
+    prov:hasSubject ent:이승훈 ;
+    prov:hasObject ent:오산학교 ;
+    prov:hasRelation "개교" ;
+    prov:claimText "이승훈이 오산학교를 개교하였다."@ko ;
+    prov:dateValue "1907-11-24"^^xsd:date ;
+    prov:datePrecision vocab:Day ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:relationship_issue ;
+    prov:hasSource src:SRC-102 ;
+    prov:hasEvidence evd:EVD-102 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; retained with relationship_issue | v9.3: 보류 — review_flag=relationship_issue, 관계/해석에 추가 검증 필요. claim_hold.csv로 이관 (claim_status 값 자체는 변경하지 않음 — 사실 근거와 관계 해석은 독립적으로 평가)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-LEE-A a prov:Claim ;
+    prov:belongsToItem item:item-46 ;
+    prov:claimDecision "hold" ;
+    prov:hasSubject ent:이동휘 ;
+    prov:hasObject ent:대한민국임시정부 ;
+    prov:hasRelation "취임" ;
+    prov:claimText "이동휘가 임시정부 국무총리에 취임하였다."@ko ;
+    prov:dateValue "1919-08"^^xsd:gYearMonth ;
+    prov:datePrecision vocab:Month ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:relationship_issue ;
+    prov:hasSource src:SRC-104 ;
+    prov:hasEvidence evd:EVD-104 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; retained with relationship_issue | v9.3: 보류 — review_flag=relationship_issue, 관계/해석에 추가 검증 필요. claim_hold.csv로 이관 (claim_status 값 자체는 변경하지 않음 — 사실 근거와 관계 해석은 독립적으로 평가)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
+claim:CLM-LEE-B a prov:Claim ;
+    prov:belongsToItem item:item-46 ;
+    prov:claimDecision "hold" ;
+    prov:hasSubject ent:이동휘 ;
+    prov:hasObject ent:대한민국임시정부_국무원 ;
+    prov:hasRelation "합동취임식_거행" ;
+    prov:claimText "이동휘가 포함된 통합임시정부 국무원 합동 취임식이 거행되었다."@ko ;
+    prov:dateValue "1919-11-03"^^xsd:date ;
+    prov:datePrecision vocab:Day ;
+    prov:dateValueStatus vocab:source_stated ;
+    prov:hasEstimation "false"^^xsd:boolean ;
+    prov:hasClaimStatus vocab:confirmed ;
+    prov:hasDateStatus vocab:verified ;
+    prov:hasVerificationStatus vocab:directly_verified ;
+    prov:hasReviewFlag vocab:relationship_issue ;
+    prov:hasSource src:SRC-105 ;
+    prov:hasEvidence evd:EVD-105 ;
+    prov:changeHistory "v9.1 pre-TTL cleanup; retained with relationship_issue | v9.3: 보류 — review_flag=relationship_issue, 관계/해석에 추가 검증 필요. claim_hold.csv로 이관 (claim_status 값 자체는 변경하지 않음 — 사실 근거와 관계 해석은 독립적으로 평가)" ;
+    prov:verificationDate "2026-08-29"^^xsd:date .
+
