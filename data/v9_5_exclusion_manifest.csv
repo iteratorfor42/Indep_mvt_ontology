@@ -1,0 +1,17 @@
+﻿item_no,item_name,claim_id,exclusion_reason,disposition
+3,숭실학교,CLM-030,source/evidence 없음; related_to만 존재,excluded_from_ttl
+4,보성학교,CLM-031,source/evidence 없음; related_to만 존재,excluded_from_ttl
+8,대한독립군,CLM-048,간접 근거만 있고 자체 provenance 부족,excluded_from_ttl
+11,조선물산장려회,CLM-JOSEON-02,1920-08-23 정확한 일자 최초 출처 미확인,excluded_from_ttl
+12,신간회,CLM-032,source/evidence 없음,excluded_from_ttl
+18,청산리전투,CLM-043,source/evidence 없음; 사건/개인 참여 Claim 미분리,excluded_from_ttl
+24,함석헌,CLM-033,source/evidence 없음; claim이 포괄적,excluded_from_ttl
+27,홍범도,CLM-027-06,사건 날짜에서 개인 참여일을 추론,excluded_from_ttl
+28,배위량,CLM-034,source/evidence 없음,excluded_from_ttl
+30,차이석,CLM-036,source/evidence 없음,excluded_from_ttl
+31,이용익,CLM-037,source/evidence 없음,excluded_from_ttl
+36,이동녕,CLM-038,source/evidence 없음,excluded_from_ttl
+37,이상룡,CLM-039b,source/evidence 없음,excluded_from_ttl
+38,지청천,CLM-040,source/evidence 없음,excluded_from_ttl
+44,이범석,CLM-041,source/evidence 없음,excluded_from_ttl
+49,박희도,CLM-042,source/evidence 없음,excluded_from_ttl
