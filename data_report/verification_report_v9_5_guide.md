@@ -120,5 +120,5 @@ date_status  = not_directly_verified  (그 관계가 시작된 날짜는 확인 
 v9.5_claim_core.csv        34건 (유지+수정)
 v9.5_claim_hold.csv         5건 (보류)
 v9.5_exclusion_manifest.csv 16건 (TTL 미반영, 삭제 아님)
-v9.5_gwanhak_claims.ttl     Core+Hold 39건, 987 트리플
+v9.5_gwanhak_claims.ttl     Core+Hold 39건, 987 트리플 => 9_semantic_archive_v9_5.ttl로 이름 통일
 ```

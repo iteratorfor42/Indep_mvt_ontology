@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ttl_to_lst.py
+ttl_to_lst.py [폐기본]
 -------------
 독립운동-근대학교 온톨로지(.ttl, RDF/OWL Turtle)를
 MakeGraph2022 호환 재구현(phase1-compatible/makegraph.py)이 읽는
 .lst 포맷으로 변환한다.
 
 TTL이 정본(GitHub 보관, Protégé 추론용)이고,
-.lst는 이 스크립트로 언제든 다시 생성 가능한 파생 산출물이다.
+.lst는 이 스크립트로 언제든 다시 생성 가능한 파생 산출물.
+=> 2026년 8월까지는 .lst를 최종 산출물로 놔두고자 ttl_to_lst.py를 만들었으나,
+ makeGraph2026_refined 작업을 진행하며 ttl을 그대로 사용하게 되었고, 
+ 시각화도 dh_webpage의 html을 활용하게 되었다.
+ 결론 : 이 실행 파일은 아예 사용조차 안 한 폐기본이다.
+        이 파일을 쓸 경우 코드 제대로 돌아가는지 등 기본 검증부터 해야 한다.
+ 
+
 
 사용법:
     python ttl_to_lst.py independence_school_ontology.ttl -o independence.lst
@@ -22,6 +29,7 @@ from rdflib.namespace import split_uri
 
 NS = Namespace("http://example.org/independence-school#")
 
+# 위 example 경우 말 그대로 example일 뿐이고, 상단의 설명처럼 이 파일은 실행 사용되지 않았다. 
 # 상위 클래스로 묶기 위한 매핑 (온톨로지의 subClassOf 계층을 .lst의
 # 6개 표시 클래스로 축약한다. .lst는 노드 하나에 클래스 하나만 허용하므로,
 # ColonialCollaborator만 별도 클래스로 분리해 시각적으로 구분되게 한다)

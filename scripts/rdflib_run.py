@@ -1,9 +1,14 @@
 """
-2개 방향 중 1번으로 먼저 접근했는데, 막상 온톨로지 수정하려고 하니 복잡해서 2>를 위해 rdflib_run.py 만듦.
+다음의 두 접근 중 1번으로 먼저 시도했는데, 
+막상 온톨로지 수정하려고 하니 복잡해서 2>를 위해 rdflib_run.py 만들게 됨.
 1> TTL → .lst 변환기를 만들고, 기존 makegraph.py로 넘기기rdflib 같은 라이브러리로 TTL을 파싱
 트리플에서 Class(rdf:type), Relation(predicate), Node(subject/object)를 추출해 .lst 형식으로 매핑
 그다음 지금 만든 makegraph.py로 그대로 그래프 생성
 2> TTL을 바로 읽어서 Vis.js로 그리는 별도 스크립트 작성.lst 경유 없이 rdflib으로 파싱한 트리플을 곧장 nodes/edges로 변환
+
+위의 1>과 2>의 접근이 makeGraph2026_refined와 makeGraph2026_refined_GUI_TTL_ver 저장소에 그대로 드러남.
+
+
 """
 
 from rdflib import Graph, RDF, RDFS
