@@ -50,18 +50,17 @@
 ## 검증 보고서 아카이브 (`data_report/`)
 
 버전마다 "무엇을 검증했고, 무엇을 발견했고, 무엇을 고쳤는가"를 개별 마크다운 보고서로 남겼다.
-전체 흐름을 한 번에 보려면 `verification_report_v1-v8.md`와 `verification_report_v1-v10.md`(통합본)을 보고,
+전체 흐름을 한 번에 보려면 `verification_report_v1-v10.md `(통합본)을 보고,
 특정 버전의 세부 내용을 보려면 버전별 개별 보고서를 참고할 것.
+(보고서를 일일이 또 재확인하고 수정하는 과정에서 꼭 필요한 검증 보고서만 일부 남겼다.
+만약 이전 보고서가 필요하다면 깃 커밋 이력을 통해 확인 가능하다.)
+
 
 ```text
-verification_report_v1-v8.md        본체(v1~v8) 전체 흐름 요약
-verification_report_v1-v10.md       본체+Provenance 트랙 통합 재확인
-verification_report_v5.md           v5 개별 검증(succeedByPersonTo 근거 부재 등)
-verification_report_v6.md           v6 개별 검증(소속/참여 12+9건 미기재 등)
-verification_report_v7.md           v7 개별 검증(자동상속 금지 원칙 최초 적용 등)
-verification_report_v8_1.md ~
-verification_report_v8_5_2(ref_remapping).md
-                                     v8 세부 검증(단계별 P0 처리 과정)
+verification_report_v1-v10.md        본체(v1~v8) 전체 흐름 요약
+verification_report_v8_1.md 
+verification_report_v8_5.md
+                                     v8 세부 검증(단계별 처리 과정)
 verification_report_v9_1.md ~
 verification_report_v9_5.md,
 verification_report_v9_5_guide.md
@@ -76,15 +75,16 @@ visualization_revision_report_v9_5_vs_v9_5re.md
 ## 도구 — 변환·시각화 파이프라인 (v1 전용, 구형)
 
 6. **`scripts/ttl_to_lst.py`** — MAKEGRAPH2022 변환기
-   `data/*.ttl`을 파싱해 `makeGraph2026_refined`가 읽는 `.lst` 포맷으로
-   변환한다. TTL의 세분화된 서브클래스(IndependenceActivist, Educator 등)를
+   `data/*.ttl`을 파싱해 `makeGraph2026_refined`가 읽는 `.lst` 포맷으로 변환한다. 
+   TTL의 세분화된 서브클래스(IndependenceActivist, Educator 등)를
    `.lst`가 허용하는 6개 클래스(School/Organization/Event/Place/Person/
    ColonialCollaborator)로 압축하고, `ledTo` 관계는 `.lst`의 `sequence`
    화살표(사건의 시간적 인과 표현)에 매핑했다.
 
-   으아아아아아아아아아아아ㅏㅏㅏㅏㅏㅏㅏㅏ
-   끄아아아아아아아아아악
-   lst 하려다가 ttl로 그냥 했고, 아나나나나나나나나 xlsx 과 csv 같이 놔뒀지만 내가 csv만 봄 ㄱㄱㄱㄱㄱㄱㄱ .........적어야 되는데. 
+> 간략히 말해서 원래 시각화를  `.lst`로 하고자 이거 만들었는데, 진행 과정에서 'ttl'과 'html'을 병행했다.
+> (여담인데, lst로는 시각화 표현할 만한 게 많지 않기에 ttl을 썼다.)
+> 마찬가지의 이유에서 초반에는 표를 xlsx과 csv로 함께 놔뒀지만, csv만 놔뒀다.
+> (엑셀이 필요하다면 커밋 이력에서 사용 가능하지만, 필자는 csv 위주로 분석했기에 csv & 코랩 혹은 본인 IDE로 확인하는 걸 추천한다.)
 
    ```bash
    pip install rdflib
@@ -96,7 +96,8 @@ visualization_revision_report_v9_5_vs_v9_5re.md
    위 스크립트로 생성한 `.lst`와, 이를 `makeGraph2026_refined`의
    `phase1-compatible/makegraph.py`에 실제로 넣어 생성한 HTML.
    오류 0건, 53개 노드·78개 링크·6개 클래스·15개 관계 정상 파싱 확인
-   (v1 기준 검증 — v3 이후 47개체본은 아직 이 파이프라인으로 재검증되지 않음).
+
+> 앞서 적은 것처럼 이 저장소의 output은 별 의미가 없다. makegraph를 클린룸으로 구현한 ver이 궁금하다면, 관련 저장소를 확인하시길 바란다.
 
    ```bash
    # makeGraph2026_refined 저장소를 클론한 뒤
@@ -106,29 +107,37 @@ visualization_revision_report_v9_5_vs_v9_5re.md
 
 8. **`viz/independence_school_ontology.html`** — 독립 D3.js 뷰어(v1 전용)
    MAKEGRAPH와 별개로, 브라우저에서 바로 여는 것만으로 동작하는
-   자체 인터랙티브 그래프. 노드 클릭 시 사료 설명(`.lst`에는 담기지
-   않는 상세 정보)까지 패널에 표시된다.
+   자체 인터랙티브 그래프. 노드 클릭 시 사료 설명(`.lst`에는 담기지 않는 상세 정보)까지 패널에 표시된다.
 
    > v3 이후(47개체, 단일 Event 스키마)와 v9 계열(Claim 스키마)을 보려면
    > 이 뷰어가 아니라 `dh-webpage` 저장소 `site/ontology/versions/`의
-   > 페이지(v6, v8, v9_5, v9_5re, v10 등)를 참고할 것 — 스키마가 달라 이
-   > D3 뷰어/MAKEGRAPH 파이프라인으로는 그대로 표시할 수 없다.
+   > 페이지(v6, v8, v9_5, v9_5re, v10 등)를 참고할 것
+   >— 스키마가 달라 이 D3 뷰어/MAKEGRAPH 파이프라인으로는 그대로 표시할 수 없다.
 
 ## 한계
 
 - `.lst` 포맷은 노드별 자유 서술(사료 원문, 설명)을 저장할 필드가 없어,
   MAKEGRAPH 결과물에는 이름·클래스·관계만 남는다.
-- 6~8절의 MAKEGRAPH/D3 파이프라인은 **v1 스키마 전용**이다. v3부터 스키마가
-  단일 Event 중심으로 바뀌고 v9부터는 다시 Claim 중심으로 바뀌면서, 두
-  파이프라인 모두 이후 버전으로 재적용·재검증되지 않았다. v3 이후는
-  `dh-webpage` 저장소의 vis-network 기반 뷰어가 대신한다.
-- v9 계열(Provenance 트랙)은 v8 본체와 **다른 스키마**를 쓴다 — 두 트랙을
-  하나의 통합 TTL로 병합하는 작업은 아직 이뤄지지 않았다.
-- `data_report/`의 `verification_report_v8_*` 세부 보고서들은 v8 하나를
-  여러 단계로 쪼갠 것이라, 통합 흐름만 보려면 `verification_report_v1-v8.md`
-  하나로 충분하다.
+  (이런 점 때문에 그냥 .ttl을 이용한 것이다.)
+- 6~8절의 MAKEGRAPH/D3 파이프라인은 **v1 스키마 전용**이다.
+  이후 스키마가 단일 Event 중심으로 바뀌고 v9부터는 다시 Claim 중심으로 바뀌면서,
+  두 파이프라인 모두 이후 버전으로 재적용·재검증되지 않았다. 
+  v2 이후는 `dh-webpage` 저장소의 vis-network 기반 뷰어가 대신한다.
+- v9 계열(Provenance 트랙)은 v8 본체와 **다른 스키마**를 쓴다 
+ — 두 트랙을 하나의 통합 TTL로 병합하는 작업은 아직 이뤄지지 않았다.
+  (이건 노력 대비 완성도 높은 결과가 나오기 힘들기에 안 하는 게 좋다고 생각하며, 그냥 병렬로 접근 & 비교 분석하는 걸 추천한다.)
+
 
 ## 참고 방법론
 
 - 김현, 『인문정보학의 모색』, 북코리아, 2012.
 - AKS 디지털인문학연구소, ["온톨로지 설계 방법"](https://dh.aks.ac.kr/Edu/wiki/index.php/온톨로지_설계_방법)
+
+
+## 참고 문헌 
+Tuominen, J., Hyvönen, E., & Leskinen, P. (2018). Bio CRM: A data model for representing biographical data for prosopographical research. In A. Fokkens, S. ter Braake, R. Sluijter, P. Arthur, & E. Wandl-Vogt (Eds.), *Proceedings of the Second Conference on Biographical Data in a Digital World 2017 (BD2017)* (pp. 59–66). RWTH Aachen University. http://ceur-ws.org/Vol-2119/paper10.pdf
+(Baro. (2025, May 21). BioCRM: 인물 생애 정보 기술을 위한 데이터 모델. 한국디지털인문학협의회 (KADH). https://www.kadh.org/biocrm-%EC%9D%B8%EB%AC%BC-%EC%83%9D%EC%95%A0-%EC%A0%95%EB%B3%B4-%EA%B8%B0%EC%88%A0%EC%9D%84-%EC%9C%84%ED%95%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%AA%A8%EB%8D%B8/)
+
+김바로. (2017). *제도와 인사의 관계성 데이터 아카이브 구축과 활용: 근대 학교 자료(1895~1910)를 중심으로* [박사학위논문, 한국학중앙연구원 한국학대학원].
+
+김바로. (2026년 5월 11일). *지식 그래프 기반 근대 인물 LOD 구축 및 LLM 연계를 위한 지식 보충 생성(KAG) 모델 연구*. 한국디지털인문학협의회(KADH). KADH 연구과제 소개 페이지.
