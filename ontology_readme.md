@@ -1,6 +1,8 @@
 
 # 온톨로지 프로젝트 소개 
-### 이 소개글은 DH_Webpage의 온톨로지 프로젝트 소개와 전문이 동일하다.
+
+### '이 소개글은 VisualHumanities 저장소의 온톨로지 프로젝트 소개와 전문이 동일하다.'
+### '또한 26.09.24 웹사이트에도 html로 공개했으며,'온톨로지 프로젝트 소개 보러가기'를 클릭하여 접속 가능하다.'
 
 [⬅️ 메인 화면으로 돌아가기](./README.md)
 
@@ -29,7 +31,7 @@
 ## 3. 설계 의도
 
 
-본 프로젝트는 최대 70일의 작업 기간을 목표로 시작된 단기 연구이다. 이에 따라 논리 전개의 주요 뼈대는 김바로 교수의 박사학위논문에서 가져오고, 2025년부터 2026년까지 KDJH에 소개된 논문과 연구계획을 보조적인 참고 맥락으로 추가하거나 언급하는 방향으로 진행하였다.
+본 프로젝트는 최대 70일의 작업 기간을 목표로 시작된 단기 연구이다. 이에 따라 논리 전개의 주요 뼈대는 김바로 교수의 박사학위논문에서 가져오고, 2025년부터 2026년까지 KADH에 소개된 논문과 연구계획을 보조적인 참고 맥락으로 추가하거나 언급하는 방향으로 진행하였다.
 
 메인 온톨로지의 기본 틀로는 김바로 교수의 초기 Event 모델을 채택하였다. 인물의 주요 활동과 사건을 Event 단위로 구조화하고, 프로젝트에서 다루는 관계와 자료의 특성에 맞춰 필요한 요소를 선택적으로 구성하였다. 이는 연구 대상 데이터에 최적화된 표현 구조를 우선한 설계 결정이다.
 
@@ -252,7 +254,7 @@ Bio CRM 역시 사건과 역할을 시간적 맥락 속에서 표현할 수 있�
 | 시간 정보       | 사건의 시간 범위를 표현                            | 계획서만으로 v9.x의 날짜 상태 규칙과 동일 여부를 판정할 수 없음 | 날짜 상태와 Rule G-02를 통해 날짜 주장 검토를 관리                                     |
 | 불확실성·검증     | 본 비교에서 확인한 문헌 범위 내의 모델 설명을 기준으로 비교       | 사료 비판 정보를 포함한 지식 그래프 연구 방향을 제시         | Claim·Evidence·Source 및 검토 상태를 별도 Provenance 트랙에서 관리                  |
 | 출처·근거       | Claim 단위 상태 필드와 직접 대응한다고 단정하지 않음         | 사료 비판 정보를 지식 그래프에 포함하려는 방향을 제시         | 주장과 근거, 출처 및 검토 정보를 표현하도록 설계                                          |
-| RDF·온톨로지 범위 | CIDOC-CRM 계열 확장 모델                       | RDF-star 및 Bio CRM 활용을 연구 방향으로 제시      | 김바로 교수 박사 논문 기만 event ontology[v1~v8] & 검증[v9]  
+| RDF·온톨로지 범위 | CIDOC-CRM 계열 확장 모델                       | RDF-star 및 Bio CRM 활용을 연구 방향으로 제시      | 김바로 교수 박사 논문 기반 event ontology[v1~v8] & 검증[v9]  
 
 ### 8-3. 종합 정리
 
@@ -295,14 +297,14 @@ Bio CRM 역시 사건과 역할을 시간적 맥락 속에서 표현할 수 있�
 
 ---
 
-## 10. 참고문헌
+## 10. 참고 문헌
 
-Tuominen, J., Hyvönen, E., & Leskinen, P. (2018). Bio CRM: A data model for representing biographical data for prosopographical research. In A. Fokkens, S. ter Braake, R. Sluijter, P. Arthur, & E. Wandl-Vogt (Eds.), *Proceedings of the Second Conference on Biographical Data in a Digital World 2017 (BD2017)* (pp. 59–66). RWTH Aachen University. http://ceur-ws.org/Vol-2119/paper10.pdf
-
-
+- 김현 (2012). 인문정보학의 모색. 북코리아.
+- 김바로. (2017). *제도와 인사의 관계성 데이터 아카이브 구축과 활용: 근대 학교 자료(1895~1910)를 중심으로* [박사학위논문, 한국학중앙연구원 한국학대학원].
+- 김바로 (2018). 『시맨틱 데이터 아카이브의 구축과 활용. 디지털인문학연구총서 6. 보고사.   
+- AKS 디지털인문학연구소. ["온톨로지 설계 방법"](https://dh.aks.ac.kr/Edu/wiki/index.php/온톨로지_설계_방법)
+- 류인태, 곽지은, 권기성, 김바로, 김병준, 김지선, 박진호, 양승목, 이민철, 이재연, 장문석, 지영원, 한희연 (2023). 디지털로 읽고 데이터로 쓰다: 디지털 한국어문학의 모색. 성균한국어문학총서 2. 휴머니스트.
+- Tuominen, J., Hyvönen, E., & Leskinen, P. (2018). Bio CRM: A data model for representing biographical data for prosopographical research. In A. Fokkens, S. ter Braake, R. Sluijter, P. Arthur, & E. Wandl-Vogt (Eds.), *Proceedings of the Second Conference on Biographical Data in a Digital World 2017 (BD2017)* (pp. 59–66). RWTH Aachen University. http://ceur-ws.org/Vol-2119/paper10.pdf
 (Baro. (2025, May 21). BioCRM: 인물 생애 정보 기술을 위한 데이터 모델. 한국디지털인문학협의회 (KADH). https://www.kadh.org/biocrm-%EC%9D%B8%EB%AC%BC-%EC%83%9D%EC%95%A0-%EC%A0%95%EB%B3%B4-%EA%B8%B0%EC%88%A0%EC%9D%84-%EC%9C%84%ED%95%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%AA%A8%EB%8D%B8/)
-
-김바로. (2017). *제도와 인사의 관계성 데이터 아카이브 구축과 활용: 근대 학교 자료(1895~1910)를 중심으로* [박사학위논문, 한국학중앙연구원 한국학대학원].
-
-김바로. (2026년 5월 11일). *지식 그래프 기반 근대 인물 LOD 구축 및 LLM 연계를 위한 지식 보충 생성(KAG) 모델 연구*. 한국디지털인문학협의회(KADH). KADH 연구과제 소개 페이지.
+- 김바로. (2026년 5월 11일). *지식 그래프 기반 근대 인물 LOD 구축 및 LLM 연계를 위한 지식 보충 생성(KAG) 모델 연구*. 한국디지털인문학협의회(KADH). KADH 연구과제 소개 페이지.
 

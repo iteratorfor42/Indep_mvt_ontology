@@ -134,16 +134,14 @@ visualization_revision_report_v9_5_vs_v9_5re.md
   (이건 노력 대비 완성도 높은 결과가 나오기 힘들기에 안 하는 게 좋다고 생각하며, 그냥 병렬로 접근 & 비교 분석하는 걸 추천한다.)
 
 
-## 참고 방법론
+## 참고 문헌
 
-- 김현, 『인문정보학의 모색』, 북코리아, 2012.
-- AKS 디지털인문학연구소, ["온톨로지 설계 방법"](https://dh.aks.ac.kr/Edu/wiki/index.php/온톨로지_설계_방법)
-
-
-## 참고 문헌 
-Tuominen, J., Hyvönen, E., & Leskinen, P. (2018). Bio CRM: A data model for representing biographical data for prosopographical research. In A. Fokkens, S. ter Braake, R. Sluijter, P. Arthur, & E. Wandl-Vogt (Eds.), *Proceedings of the Second Conference on Biographical Data in a Digital World 2017 (BD2017)* (pp. 59–66). RWTH Aachen University. http://ceur-ws.org/Vol-2119/paper10.pdf
+- 김현 (2012). 인문정보학의 모색. 북코리아.
+- 김바로. (2017). *제도와 인사의 관계성 데이터 아카이브 구축과 활용: 근대 학교 자료(1895~1910)를 중심으로* [박사학위논문, 한국학중앙연구원 한국학대학원].
+- 김바로 (2018). 『시맨틱 데이터 아카이브의 구축과 활용. 디지털인문학연구총서 6. 보고사.   
+- AKS 디지털인문학연구소. ["온톨로지 설계 방법"](https://dh.aks.ac.kr/Edu/wiki/index.php/온톨로지_설계_방법)
+- 류인태, 곽지은, 권기성, 김바로, 김병준, 김지선, 박진호, 양승목, 이민철, 이재연, 장문석, 지영원, 한희연 (2023). 디지털로 읽고 데이터로 쓰다: 디지털 한국어문학의 모색. 성균한국어문학총서 2. 휴머니스트.
+- Tuominen, J., Hyvönen, E., & Leskinen, P. (2018). Bio CRM: A data model for representing biographical data for prosopographical research. In A. Fokkens, S. ter Braake, R. Sluijter, P. Arthur, & E. Wandl-Vogt (Eds.), *Proceedings of the Second Conference on Biographical Data in a Digital World 2017 (BD2017)* (pp. 59–66). RWTH Aachen University. http://ceur-ws.org/Vol-2119/paper10.pdf
 (Baro. (2025, May 21). BioCRM: 인물 생애 정보 기술을 위한 데이터 모델. 한국디지털인문학협의회 (KADH). https://www.kadh.org/biocrm-%EC%9D%B8%EB%AC%BC-%EC%83%9D%EC%95%A0-%EC%A0%95%EB%B3%B4-%EA%B8%B0%EC%88%A0%EC%9D%84-%EC%9C%84%ED%95%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%AA%A8%EB%8D%B8/)
+- 김바로. (2026년 5월 11일). *지식 그래프 기반 근대 인물 LOD 구축 및 LLM 연계를 위한 지식 보충 생성(KAG) 모델 연구*. 한국디지털인문학협의회(KADH). KADH 연구과제 소개 페이지.
 
-김바로. (2017). *제도와 인사의 관계성 데이터 아카이브 구축과 활용: 근대 학교 자료(1895~1910)를 중심으로* [박사학위논문, 한국학중앙연구원 한국학대학원].
-
-김바로. (2026년 5월 11일). *지식 그래프 기반 근대 인물 LOD 구축 및 LLM 연계를 위한 지식 보충 생성(KAG) 모델 연구*. 한국디지털인문학협의회(KADH). KADH 연구과제 소개 페이지.
