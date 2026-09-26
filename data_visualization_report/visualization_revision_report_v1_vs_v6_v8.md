@@ -53,7 +53,7 @@ v6에서는 이러한 차이를 극복하기 위해 **"Event를 두 개의 간�
 
 ## 3. 참고 사항
 ### 시각화 트랙과 관련하여 verification_report_v1-v10.md 전문은 다음과 같다.
-### IV. 시각화 트랙 상세 (v6~v10, dh-webpage)
+### IV. 시각화 트랙 상세 (v6\~v10, dh-webpage)
 
 ### 1. v6.html
 
