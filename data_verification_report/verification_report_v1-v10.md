@@ -390,3 +390,5 @@ CLM-023 재발, 공훈 API 시행착오)이 반복됐다.
 이 정합성 메모는 문서 간 대조와 명시된 재현 검증을 기록한 것이며, 
 여기 제시된 서술만으로 모든 원본 TTL·CSV·HTML의 내용을 새롭게 독립 검증했다는 뜻은 아니다.
 (자세한 내역은 깃 커밋을 통해 직접 확인할 수 있다.)
+
+> 여담. 현재 필자 IDE가 VSCODE인데, 막상 커밋 후 Git에서 필자가 설정하지 않는 취소선(가로줄)이 나오는 걸 발견하여 Preferences: Open User Settings (JSON)에  "markdown.preview.strikethrough": false 코드를 추가하고 재커밋함.
