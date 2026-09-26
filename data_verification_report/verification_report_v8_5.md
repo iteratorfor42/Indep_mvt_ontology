@@ -1,19 +1,14 @@
-# v8 추가 검증 보고서 (ver5, 최종본)
+# v8.5 검증 보고서[26.09.26 재확인]
 
-> 8의 규칙 P는 V8_1, G는 8_5 이 버전 이후 9 검증 시작
+> 참고> v8의 규칙 P는 v8.1(8_1), G는 v8.5(8_5)에 등장한다.
+>       v8.5 검증 보고서를 기반으로 v9가 시작되었다. 
 
-> **본 문서는 v8 ver5의 최종 확정판이며, git commit 대상이다.** 
-> 이전 초안 `verification_report_v8_5_1.md` 대비 유일한 실질 변경은 §10의 Source
-> count 수치 정정이다 — v8_5_1의 §10은 "36건"으로 남아 있었으나, 같은
-> 문서의 부록이 4건 제외 경위를 설명하며 "본문 실제 인용 출처는 32건"이라고
-> 명시하고 있어 문서 내부에서 두 수치가 어긋나 있었다(36−4=32로 산수는
-> 맞으나, §10이 제외 이후 수치를 반영하지 못한 것). 본 최종본은 §10을
-> 32건으로 정정해 §10과 부록이 동일한 수치를 가리키도록 맞췄다. 그 외
-> 본문·부록·규칙(Rule G-01~G-08) 내용은 v8_5_1과 동일하다.
->
-## — 49개 항목 Source Mapping 1차 검증 및 Provenance Layer 설계 보고서 (설계 승인본)
+> 또한 v8.5 경우 v8_5_1과  v8_5_2 두 개로 나뉘어져 있었는데,
+> v8.5로 통합했고, 관련 설명 내역은 git commit 이력에서 확인하길 바란다.
 
-> **버전 이력**: ver1(v8 RDF 구조검증) → ver2(49개 항목 URL 팩트체크 초안) → ver3(Claim/Evidence/Source 분리, 상태값 이원화) → ver4(김좌진 정정, Claim 추가 분해, status vocabulary 3층+flag 구조) → **ver5(date_value_status 정의 명확화, review_flag 다중값 명시, Evidence↔Claim 다대다 허용, 오산학교 source_conflict 유보, 49개 상태표를 보조지표로 재정의, v9 데이터 생성 규칙 8개 신설)**
+## 부제> 49개 항목 Source Mapping 1차 검증 및 Provenance Layer 설계 보고서 (;v9 설계 승인본)
+
+> **버전 이력**: ver1(v8 RDF 구조검증) → ver2(49개 항목 URL 팩트체크 초안) → ver3(Claim/Evidence/Source 분리, 상태값 이원화) → ver4(김좌진 정정, Claim 추가 분해, status vocabulary 3층+flag 구조) → **ver5(date_value_status 정의 명확화, review_flag 다중값 명시, Evidence↔Claim 다대다 허용, 오산학교 source_conflict 유보, 49개 상태표를 보조지표로 재정의, v9 데이터 생성 G 규칙 8개 신설)**
 
 ---
 
@@ -39,6 +34,7 @@ review_flag        =  다중값(multi-valued)
 ---
 
 # 0-1. ver4 → ver5 변경 요약
+## [ver4가 궁금하다면 git commit 이력에서 확인할 수 있다.]
 
 
 | No | 변경 내용 | 근거 |
@@ -117,7 +113,7 @@ has_estimation = true
   → 원자료에 없는 값을 상위 사건의 날짜 등에서 추론·복사하여 만든 경우에만 true
 ```
 
-**중요한 구분(ver5 추가)**: **정밀도를 낮추어 표현한 것 ≠ 값을 추정한 것**이다.
+**중요한 구분(ver5 추가)**: **정밀도를 낮추어 표현한 것 ≠ 값을 추정한 것**
 
 * 원자료: "1919년 8월 말" → 저장값: `1919-08` (Month) → `has_estimation = false`
   (원자료 자체가 그 해상도의 정보를 제공했고, 단지 저장 형식이 day 단위를 표현하지 않을 뿐)
@@ -151,8 +147,8 @@ provenance_gap          # 기존 CSV 값의 최초 출처를 역추적하지 못
 
 `review_flag`는 **단일 enum이 아니라 다중값**이다.
 
-* CSV 표기: 파이프(`|`)로 구분 — 예) `relationship_issue|provenance_gap`
-* RDF 표기: 다중 트리플 — 예)
+* CSV 표기: 파이프(`|`)로 구분 — 예> `relationship_issue|provenance_gap`
+* RDF 표기: 다중 트리플 — 예>
   ```text
   :오산학교이승훈설립 :hasReviewFlag :RelationshipIssue .
   :오산학교이승훈설립 :hasReviewFlag :SourceConflict .
@@ -242,7 +238,7 @@ Claim: 조선물산장려회가 1920년 8월 23일에 조직되었다
 date_value = 1920-08-23
 claim_status = validation_hold
 date_status = not_directly_verified
-date_value_status = unresolved       # legacy CSV 값, 대표값으로 아직 채택 못함
+date_value_status = unresolved       # legacy CSV 값, 대표값으로 아직 확정 못함
 verification_status = url_recheck_required
 review_flag = [provenance_gap]
 ```
@@ -443,12 +439,13 @@ v9에서 49개 항목을 Claim 단위로 전개할 때 아래 규칙을 그대�
 
 **Rule G-08.** `review_flag`의 `source_conflict`는 두 값이 **동일 사건**을 가리키는 것으로 확인된 경우에만 부여한다. 동일 사건 여부가 미확인이면 `relationship_issue`만 부여한다(§2-6, §4-2).
 
-> 참고: verification_report_v8_1의 P-03·P-06(§11)의 문제의식
-> G-02(§12)로 더 정밀하게 재정식화되었다. 두 시리즈는 같은 원칙의 서로 다른 발전 단계다.
+> 참고: verification_report_v8_1의 P-03·P-06(§11)의 문제의식은
+> G-02(§12)로 더 정밀하게 작성되었다.
+> 두 시리즈는 같은 원칙의 서로 다른 발전 단계다. (이건 v8과 v9 속성 차이로 접근하면 이해하기 쉽다. v9는 검증)
 
 ---
 
-# 13. ver5 결론
+# 13. v8.5 결론
 
 | 영역 | 판정 |
 |---|---|
@@ -611,7 +608,7 @@ v9에서 49개 항목을 Claim 단위로 전개할 때 아래 규칙을 그대�
 
 ---
 
-**비고 1**: §7의 `url_recheck_required` 13건(숭실학교, 보성학교, 신간회, 함석헌, 배위량, 차이석, 이용익, 이동녕, 이상룡, 지청천, 이범석, 박희도, 청산리전투)은 본문에 실제 URL이 제시되지 않으므로 본 부록에도 대응 항목을 두지 않는다. v9에서 실제 Source를 확보하면 `S-33`부터 이어서 `[ver5 신규]` 태그로 추가한다.
+**참고 1**: §7의 `url_recheck_required` 13건(숭실학교, 보성학교, 신간회, 함석헌, 배위량, 차이석, 이용익, 이동녕, 이상룡, 지청천, 이범석, 박희도, 청산리전투)은 본문에 실제 URL이 제시되지 않으므로 본 부록에도 대응 항목을 두지 않는다. v9에서 실제 Source를 확보하면 `S-33`부터 이어서 `[ver5 신규]` 태그로 추가한다.
 
-**비고 2**: 위 4건(공산주의운동, 이동휘 개인 항목, 신흥무관학교 용어해설, 우리역사넷 오산 학교)은 완전히 폐기된 것이 아니라, 향후 §8 v9 작업 큐(오산학교 동일사건 검토, 이동휘 event type 재검토 등)에서 필요 시 재인용될 수 있는 후보 출처로 §12 change_history 개념에 준해 별도 관리한다.
+**참고 2**: 위 4건(공산주의운동, 이동휘 개인 항목, 신흥무관학교 용어해설, 우리역사넷 오산 학교)은 완전히 폐기된 것이 아니라, 향후 §8 v9 작업 큐(오산학교 동일사건 검토, 이동휘 event type 재검토 등)에서 필요 시 재인용될 수 있는 후보 출처로 §12 change_history 개념에 준해 별도 관리한다.
 

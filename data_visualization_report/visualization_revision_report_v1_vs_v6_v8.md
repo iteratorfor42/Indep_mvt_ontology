@@ -2,7 +2,7 @@
 ### git이든 html이든 이 md를 연결해 놓지 않았기에 저장소에서 직접 이 글을 찾아야 읽을 수 있다.
 
 
-# 온톨로지 시각화 버전 비교: v1 vs v6 (및 v8)
+# 온톨로지 시각화 버전 비교: v1 vs v6(~v8)
 v1 이항관계 경우 시각화했을 때 가시성이 좋았는데, 
 v2부터 고도화하며 ontology_v5부터는 시각화할 경우 글씨 크기가 작아지고, 관계망이 명확히 안 드러나게 되었다.
 그래서 v5의 기존 시각화 시도를 그대로 놔두되
@@ -12,9 +12,9 @@ v6_gonghun부터는 시각화 방식을 수정하였다.
 
 ---
 
-## 1. v1 vs v6 / v8_with_gonghun 핵심 차이 비교
+## 1. v1 vs v6 & v8_with_gonghun 핵심 차이 비교
 
-| 구분 | v1 | v6 / v8_with_gonghun |
+| 구분 | v1 | v6 & v8_with_gonghun |
 | :--- | :--- | :--- |
 | **데이터 출처** | JS 파일 안에 `nodesData`/`linksData`로 직접 하드코딩 | `.ttl` 파일을 브라우저에서 `fetch`로 읽어와 실시간 파싱 |
 | **시각화 라이브러리** | D3.js (Force-directed graph 직접 구현) | vis-network (관계망) + Leaflet (GIS 지도) |
