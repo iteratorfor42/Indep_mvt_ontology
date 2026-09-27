@@ -105,6 +105,9 @@ v1~v7의 모든 중간 버전을 각각 대조한 결과로 확대하지 않는�
 이번 글에서는 다루지 않는다.
 예> v3.ttl : 6. 사건유형 시소러스 (원문 III장 3절 (5))
 
+> 참고> 혹시라도 관련 내용이 궁금하다면, comparison_report_v3_8_9_event_prov.md 내용을 참고하길 바란다. 시각화 처리를 완료하여 https://visualhumanities-39wz.onrender.com/ontology/ontology-v3-v8-v9.5-comparison.html 에서도 확인할 수 있다.
+
+
 ## 3. Bio CRM의 개념적 위치
 
 Bio CRM은 인물의 전기 정보를 구조화하기 위한 모델로, 사건과 역할, 관계를 구분하여 인물의 생애를 표현하는 데 초점을 둔다. 

@@ -1,5 +1,8 @@
 ## 기계 질의(Machine Query) 관점에서 본 v3 vs v8 vs v9.5
 
+>[26.09.27 추가] data_comparison_report 두 개 모두 하나의 html 파일로 만들어 시각화했다.
+>관련 내용은 https://visualhumanities-39wz.onrender.com/ontology/ontology-v3-v8-v9.5-comparison.html 에서 확인할 수 있다.
+
 ### v3: 검증 상태를 표현할 속성 자체가 없음
 
 ```turtle
