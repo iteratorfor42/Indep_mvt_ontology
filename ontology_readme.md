@@ -2,7 +2,8 @@
 # 온톨로지 프로젝트 소개 
 
 ### '이 소개글은 VisualHumanities 저장소의 온톨로지 프로젝트 소개와 전문이 동일하다.'
-### '또한 26.09.24 웹사이트에도 html로 공개했으며,'온톨로지 프로젝트 소개 보러가기'를 클릭하여 접속 가능하다.'
+### '또한 26.09.24 웹사이트에도 html로 공개했으며, 아래 링크를 통해 접속 가능하다.'
+https://visualhumanities-39wz.onrender.com/ontology/ontology-readme.html
 
 [⬅️ 메인 화면으로 돌아가기](./README.md)
 
@@ -297,6 +298,16 @@ Bio CRM 역시 사건과 역할을 시간적 맥락 속에서 표현할 수 있�
 개별 연구자의 온톨로지 구축을 재현·검증 가능한 작업으로 만들고, 
 서로 다른 출처의 주장을 검토하며, 
 후속 연구자가 이를 공유하고 확장할 수 있는 구조를 모색했다는 점에 있다.
+
+
+> 참고> 혹시라도 관련 구현 내역과 보고서가 궁금하다면, 아래 두 링크를 참고하길 바란다.
+>검증용 목업 링크
+https://visualhumanities-39wz.onrender.com/ontology/versions/v10re.html
+>검증용 목업 보고서 링크
+https://visualhumanities-39wz.onrender.com/ontology/ontology-v10re.html
+
+---
+
 
 ## 10. 참고 문헌
 
